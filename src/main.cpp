@@ -59,7 +59,7 @@ int main(int argc, char* args[]){
         int YPos2 = 240;
         int XPos_mo = 0;
         int YPos_mo = 0;
-        int YPos_wh = 0;
+        int YPos_wh = 1;
 
         while (gameRunning){
             while (SDL_PollEvent(&event)){
@@ -138,7 +138,11 @@ int main(int argc, char* args[]){
                  if (event.wheel.y > 0 ){
                     YPos_wh++;
                  } else if (event.wheel.y < 0 ) {
+                    if (YPos_wh <= 1) {
+                        YPos_wh = 1;
+                    } else {
                     YPos_wh--;
+                    }
                  }
                  
                  std::cout << "Scrolling is at" << YPos_wh << "." << std::endl;
