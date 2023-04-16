@@ -10,7 +10,7 @@ class RenderWindow {
         SDL_Texture* loadTexture(const char* p_filePath); 
         void cleanUp();
         void clear();
-        void render(Entity& p_entity);
+        void render(Entity &p_entity, int Pos_h);
         void display();
  
     private:
