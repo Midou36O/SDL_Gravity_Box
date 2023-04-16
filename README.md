@@ -6,6 +6,28 @@ Because i absolutely fucking hate myself and i have to make something like that 
 
 # How do i compile it !11!1!1!1!1!1
 
+## Windows (CMake)
+
+Get Visual Studio 2022 (with C++ Development selected in the installer, of course) and vcpkg. With vcpkg installed, run ``vcpkg install sdl2``, ``vcpkg install sdl2-image`` (it's possible you might have to pass ``--triplet x64-windows``). Then integrate it with Visual Studio 2022 by running ``vcpkg integrate install``. 
+
+Create a new folder called "build" and change directory into it: ``mkdir build; cd build``. 
+
+To use vcpkg packages with CMake, run ``cmake -B . -S .. -DCMAKE_TOOLCHAIN_FILE=[path to vcpkg]/scripts/buildsystems/vcpkg.cmake``. You can then build with ``cmake --build .``.
+
+Copy the ``res/img`` directory to the ``build/Debug`` folder. The executable files for this project is in that folder.
+
+## Linux (CMake)
+
+Install SDL2 and SDL2_image development libraries from your distribution's package manager. Use a search engine to find the package names for these.
+
+Create a new folder called "build" and change directory into it: ``mkdir build; cd build``.
+
+Generate build files with ``cmake ..``. You can then build with ``cmake --build .``. 
+
+Copy the ``res/img`` directory to the ``build`` folder. The executable files for this project is in that folder.
+
+## Linux (Make/G++)
+
 [Look here](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/index.php)
 
 or simply run this
