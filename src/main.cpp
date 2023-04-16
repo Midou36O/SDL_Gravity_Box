@@ -57,6 +57,8 @@ int main(int argc, char* args[]){
         int YPos1 = 0;
         int XPos2 = 240;
         int YPos2 = 240;
+        int *WPosX = 0;
+        int *WPosY = 0;
         int XPos_mo = 0;
         int YPos_mo = 0;
         int YPos_wh = 1;
@@ -156,6 +158,8 @@ int main(int argc, char* args[]){
                 std::cout << "TimeEnd : " << LastTime << "." << std::endl;
                 }       
 
+                window.GetWinPos(WPosX, WPosY);
+                std::cout << "Position of window is " << WPosX << "," << WPosY << "." << std::endl;
                 std::vector<Entity> entities = {
                                Entity(Vector2f(XPos1,YPos1), faceSprite),
                                Entity(Vector2f(XPos_mo-120,YPos_mo-120), faceSprite),

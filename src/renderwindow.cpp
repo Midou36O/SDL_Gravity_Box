@@ -35,6 +35,12 @@ void RenderWindow::cleanUp()
     SDL_DestroyWindow(window);
 }
 
+// TODO: This line Does nothing since it's "void" (aka doesn't return anything). Make it return something! 
+void RenderWindow::GetWinPos(int *WinPosX, int *WinPosY)
+{
+    SDL_GetWindowPosition(window, WinPosX, WinPosY);
+}
+
 void RenderWindow::clear()
 {
     SDL_RenderClear(renderer);
