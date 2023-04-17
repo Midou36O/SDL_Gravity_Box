@@ -1,3 +1,10 @@
+/**
+ * @file main.cpp
+ * @author Midou (midou@midou.dev)
+ * @version 0.1
+ * @date 2023-04-17
+ * 
+ */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
@@ -14,7 +21,7 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
 // Setup the delta time.
-double CurrentTime = SDL_GetTicks();
+double CurrentTime = SDL_GetTicks64();
 
 
 int main(int argc, char* args[]){
@@ -24,12 +31,12 @@ int main(int argc, char* args[]){
 
         std::cout << "-----------------------[ SDL START ! ]-----------------------"  << std::endl;
 
-        // Init the SDL video
+        // Init the SDL video.
         if (SDL_Init(SDL_INIT_VIDEO) > 0 ) {
         std::cerr << "SDL_Init defenitely failed here... ERROR: " << SDL_GetError() << std::endl;
         return 2;
     }
-
+        // Init the image.
         if (!(IMG_Init(IMG_INIT_PNG))) {
         std::cerr << "IMG_Init failed, but this is still a good progress! ERROR: " << SDL_GetError() << std::endl;
         return 3;
@@ -38,7 +45,8 @@ int main(int argc, char* args[]){
         RenderWindow window("GAME v1.0", SCREEN_WIDTH, SCREEN_HEIGHT);
                 
 
-
+        // Load the texture.
+        // \param p_filePath Path to load the texture to faceSprite.
         SDL_Texture* faceSprite = window.loadTexture("res/img/pop.png");
 
         // Entity entities[3] = { Entity(0,0, faceSprite),
@@ -47,20 +55,37 @@ int main(int argc, char* args[]){
         //};
 
 
-        // Create a dummy SDL_Event.
-        // This is currently used to keep the game up after rendering the frame.
-
+       
+       
+        
+        // Game is running (true) by default.
+        // This is currently used to keep the game up after rendering the frame.        
         bool gameRunning = true;
+        // Create a dummy SDL_Event to poll the events.
         SDL_Event event;
- 
+
+
+        // Position of the first entity. X axis.
         int XPos1 = 0;
+        // Position of the first entity. Y axis.
         int YPos1 = 0;
+
+        // Position of the second entity. X axis.
         int XPos2 = 240;
+        // Position of the second entity. Y axis.
         int YPos2 = 240;
+
+        // Window position. X axis.
         int *WPosX = 0;
+        // Window position. Y axis.
         int *WPosY = 0;
+
+        // Position of the mouse. X axis.
         int XPos_mo = 0;
+        // Position of the mouse. Y axis.
         int YPos_mo = 0;
+
+        // Scale of the entity. Y axis. 
         int YPos_wh = 1;
 
         while (gameRunning){
@@ -149,7 +174,7 @@ int main(int argc, char* args[]){
                  
                  std::cout << "Scrolling is at" << YPos_wh << "." << std::endl;
                 }  
-                double LastTime = SDL_GetTicks();
+                double LastTime = SDL_GetTicks64();
                 double DeltaTime = ( LastTime - CurrentTime ) / 1000.0f;
 
                 if (DeltaTime != 0) {
@@ -184,7 +209,7 @@ int main(int argc, char* args[]){
         }
         // Destroy the window.
         window.cleanUp();
-         std::cout << "-----------------------[ SDL EXITING ! ]-----------------------"  << std::endl;
+        std::cout << "-----------------------[ SDL EXITING ! ]-----------------------"  << std::endl;
         // Quit SDL
         SDL_Quit();
         // Return a successful exit code.

@@ -5,6 +5,14 @@
 
 #include "math.hpp"
 
+/**
+ * \brief Represents an Entity in the game.
+ * An Entity is any object that can move in the game world,
+ * such as a player, a bullet, or an enemy. This class is used to
+ * represent any entity in the game. It is used to store information 
+ * about the entity, such as its position, texture, and current animation
+ * frame. - Copilot 
+*/
 class Entity {
     
      //p_x : parameter X  || p_y : parameter y
