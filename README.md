@@ -1,6 +1,10 @@
 # SDL_Gravity_Box
 Making a "windowed" 2D box that makes the ball move when moving the window (just like an actual box in real life!)
 
+# Video preview
+
+https://user-images.githubusercontent.com/45198486/232357499-e36501e6-2c02-4c14-8fd2-1bdebf58ee01.mp4
+
 # Why do i make this
 Because i absolutely fucking hate myself and i have to make something like that for a game (not free) i'm planning to code after exams.
 
@@ -36,4 +40,8 @@ or simply run this
 
 
 _**Just consider this repo a sandbox for shit i make lol**_
+
+
+
+
 
