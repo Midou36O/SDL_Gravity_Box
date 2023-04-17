@@ -1,3 +1,5 @@
+[![DeepSource](https://app.deepsource.com/gh/Midou36O/SDL_Gravity_Box.svg/?label=active+issues&show_trend=true&token=Yy5RIIW9uK5rZ9k4pbAxcxr_)](https://app.deepsource.com/gh/Midou36O/SDL_Gravity_Box/?ref=repository-badge)
+
 # SDL_Gravity_Box
 Making a "windowed" 2D box that makes the ball move when moving the window (just like an actual box in real life!)
 
