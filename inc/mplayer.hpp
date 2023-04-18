@@ -7,7 +7,8 @@
 
 class MusicPlayer {
     public:
-        loadMusic(const char* p_filepath);
+        MusicPlayer(const char* p_filepath);
+        MusicPlayer* loadMusic(const char* p_filepath);
         void playMusic();
         void initMixer();
         void initMusic();

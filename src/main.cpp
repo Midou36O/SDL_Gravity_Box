@@ -15,6 +15,7 @@
 #include "renderwindow.hpp"
 #include "entity.hpp"
 #include "math.hpp"
+#include "mplayer.hpp"
 
 // Screen resolution.
 const int SCREEN_WIDTH = 1280;
@@ -30,7 +31,7 @@ int main(int argc, char* args[]){
         freopen( "error.txt", "w", stderr );
 
         std::cout << "-----------------------[ SDL START ! ]-----------------------"  << std::endl;
-
+        
         // Init the SDL video.
         if (SDL_Init(SDL_INIT_VIDEO) > 0 ) {
         std::cerr << "SDL_Init defenitely failed here... ERROR: " << SDL_GetError() << std::endl;
@@ -41,6 +42,9 @@ int main(int argc, char* args[]){
         std::cerr << "IMG_Init failed, but this is still a good progress! ERROR: " << SDL_GetError() << std::endl;
         return 3;
         }
+
+        // TODO: Fix that.
+        MusicPlayer MusicPlayer::MusicPlayer("res/music/1.mp3");
 
         RenderWindow window("GAME v1.0", SCREEN_WIDTH, SCREEN_HEIGHT);
                 

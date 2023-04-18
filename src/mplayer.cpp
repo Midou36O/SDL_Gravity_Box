@@ -15,7 +15,8 @@
 #include "mplayer.hpp"
 
 
-MusicPlayer::loadMusic(const char* p_filepath) {
+// TODO: Fix that.
+int MusicPlayer::loadMusic(const char* p_filepath) {
 
     Mix_Music* music = NULL;
     music = Mix_LoadMUS(p_filepath);
@@ -25,7 +26,7 @@ MusicPlayer::loadMusic(const char* p_filepath) {
         return 1;
     }
     Mix_PlayMusic(music, -1);
-    return music;
+    return 0;
 }
 
 void MusicPlayer::playMusic() {
