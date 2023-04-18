@@ -48,7 +48,7 @@ int main(int argc, char* args[]){
         
         MusicPlayer music; 
         // TODO: Make this thing usable.
-        Mix_Chunk* musicPlayer = music.loadMusic("res/bgm/bg.ogg");
+        Mix_Chunk* musicPlayer = music.loadMusic("src/res/bgm/bg.ogg");
 
         music.openAudio();
         music.playMusic();
@@ -58,7 +58,7 @@ int main(int argc, char* args[]){
 
         // Load the texture.
         // \param p_filePath Path to load the texture to faceSprite.
-        SDL_Texture* faceSprite = window.loadTexture("res/img/pop.png");
+        SDL_Texture* faceSprite = window.loadTexture("src/res/img/pop.png");
 
         // Entity entities[3] = { Entity(0,0, faceSprite),
         //                      Entity(120,120, faceSprite),
