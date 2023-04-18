@@ -7,6 +7,7 @@
  */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
@@ -18,8 +19,9 @@
 #include "mplayer.hpp"
 
 // Screen resolution.
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 720;
+#define SCREEN_WIDTH  1280
+#define SCREEN_HEIGHT  720
+#define FPS            60
 
 // Setup the delta time.
 double CurrentTime = SDL_GetTicks64();
@@ -43,10 +45,15 @@ int main(int argc, char* args[]){
         return 3;
         }
 
-        // TODO: Fix that.
-        Mix_Music* mus = music.loadMusic("res/bgm/bg.mp3");
+        
+        MusicPlayer music; 
+        // TODO: Make this thing usable.
+        Mix_Chunk* musicPlayer = music.loadMusic("res/bgm/bg.ogg");
 
-        RenderWindow window("GAME v1.0", SCREEN_WIDTH, SCREEN_HEIGHT);
+        music.openAudio();
+        music.playMusic();
+        
+        RenderWindow window("DEMO ENGINE v0.0.1", SCREEN_WIDTH, SCREEN_HEIGHT);
                 
 
         // Load the texture.
@@ -187,7 +194,7 @@ int main(int argc, char* args[]){
                 std::cout << "TimeEnd : " << LastTime << "." << std::endl;
                 }       
 
-                window.GetWinPos(WPosX, WPosY);
+                window.getWinPos(WPosX, WPosY);
                 std::cout << "Position of window is " << WPosX << "," << WPosY << "." << std::endl;
                 std::vector<Entity> entities = {
                                Entity(Vector2f(XPos1,YPos1), faceSprite),
@@ -211,6 +218,10 @@ int main(int argc, char* args[]){
            
             
         }
+        // Close the audio.
+        music.closeAudio();
+        // Free the chunk.
+        music.freeMusic();
         // Destroy the window.
         window.cleanUp();
         std::cout << "-----------------------[ SDL EXITING ! ]-----------------------"  << std::endl;

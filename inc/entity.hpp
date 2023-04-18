@@ -12,6 +12,8 @@
  * represent any entity in the game. It is used to store information 
  * about the entity, such as its position, texture, and current animation
  * frame. - Copilot 
+ * \param p_pos Position of the entity.
+ * \param p_tex Texture of the entity.
 */
 class Entity {
     

@@ -27,9 +27,10 @@
 //    Mix_PlayMusic(music, -1);
 //}
 
-Mix_Music* MusicPlayer::loadMusic(const char* p_filepath) {
-    Mix_Music* music = NULL;
-    music = Mix_LoadMUS(p_filepath);
+Mix_Chunk* MusicPlayer::loadMusic(const char* p_filepath) {
+    // Good practice to set the pointer to NULL.
+    Mix_Chunk* music = NULL;
+    music = Mix_LoadWAV(p_filepath);
 
     if (music == NULL) {
         std::cerr << "Failed to load music! ERROR: " << Mix_GetError() << std::endl;
@@ -37,8 +38,18 @@ Mix_Music* MusicPlayer::loadMusic(const char* p_filepath) {
     return music;
 }
 
+void MusicPlayer::openAudio() {
+    Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+}
+
+void MusicPlayer::closeAudio() {
+    Mix_CloseAudio();
+}
+
 void MusicPlayer::playMusic() {
-    if (Mix_PlayingMusic() == 0) {
-        std::cerr << "Music is not playing!" << std::endl;
-    }
+    Mix_PlayChannel(-1, music, 0);
+}
+
+void MusicPlayer::freeMusic() {
+    Mix_FreeChunk(music);
 }

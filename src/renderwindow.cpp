@@ -56,7 +56,7 @@ void RenderWindow::cleanUp()
 
 // Gets the position of the window. 
 // TODO: This line Does nothing since it's "void" (aka doesn't return anything). Make it return something! 
-void RenderWindow::GetWinPos(int *WinPosX, int *WinPosY)
+void RenderWindow::getWinPos(int *WinPosX, int *WinPosY)
 {
     SDL_GetWindowPosition(window, WinPosX, WinPosY);
 }
