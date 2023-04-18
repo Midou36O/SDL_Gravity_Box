@@ -8,9 +8,8 @@
 class MusicPlayer {
     public:
         MusicPlayer(const char* p_filepath);
-        MusicPlayer* loadMusic(const char* p_filepath);
+        Mix_Music* loadMusic(const char* p_filepath);
         void playMusic();
-        void initMixer();
         void initMusic();
 
     private:

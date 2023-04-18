@@ -44,7 +44,7 @@ int main(int argc, char* args[]){
         }
 
         // TODO: Fix that.
-        MusicPlayer MusicPlayer::MusicPlayer("res/music/1.mp3");
+        Mix_Music* mus = music.loadMusic("res/bgm/bg.mp3");
 
         RenderWindow window("GAME v1.0", SCREEN_WIDTH, SCREEN_HEIGHT);
                 
