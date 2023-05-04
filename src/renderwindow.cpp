@@ -56,9 +56,10 @@ void RenderWindow::cleanUp()
 
 // Gets the position of the window. 
 // TODO: This line Does nothing since it's "void" (aka doesn't return anything). Make it return something! 
-void RenderWindow::getWinPos(int *WinPosX, int *WinPosY)
+int RenderWindow::getWinPos(int *WinPosX, int *WinPosY)
 {
     SDL_GetWindowPosition(window, WinPosX, WinPosY);
+    return 0;
 }
 
 // Clears the rendered image.
@@ -67,9 +68,31 @@ void RenderWindow::clear()
     SDL_RenderClear(renderer);
 }
 
+void RenderWindow::resetSize()
+{
+    SDL_SetWindowSize(window, 1280, 720);
+}
+
+void RenderWindow::setWindowSize(int w, int h)
+{
+    SDL_SetWindowSize(window, w, h);
+}
+
+void RenderWindow::setFullscreen(bool fullscreen)
+{
+    if (fullscreen == false)
+        SDL_SetWindowFullscreen(window, 0);
+    else { 
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    }
+}
+
 // Render the rectangle, Looks for the entity class.
 // Takes the Entity value and the scale factor.
-void RenderWindow::render(Entity& p_entity, int Pos_h)
+// @param Entity The entity to render.
+// @param Pos_h The scale factor for the height.
+// @param Pos_w The scale factor for the width.
+void RenderWindow::render(Entity& p_entity, int Pos_w, int Pos_h)
 {
     // Render a rectangle from source. Takes the x, y , w(idth) and h(eight) of the rectangle.
     SDL_Rect src;
@@ -82,7 +105,7 @@ void RenderWindow::render(Entity& p_entity, int Pos_h)
     SDL_Rect dst;
     dst.x = p_entity.getPos().x;
     dst.y = p_entity.getPos().y;
-    dst.w = p_entity.getCurrentFrame().w * Pos_h;
+    dst.w = p_entity.getCurrentFrame().w * Pos_w;
     dst.h = p_entity.getCurrentFrame().h * Pos_h;
     
     SDL_RenderCopy(renderer, p_entity.getTex(), &src, &dst);

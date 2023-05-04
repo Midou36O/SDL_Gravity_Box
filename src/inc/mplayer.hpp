@@ -8,11 +8,12 @@
 class MusicPlayer {
     public:
         //MusicPlayer(const char* p_filepath);
-        Mix_Chunk* loadMusic(const char* p_filepath);
+        Mix_Music* loadMusic(const char* p_filepath);
+        void initMusic();
         void playMusic();
         void openAudio();
         void closeAudio();
         void freeMusic();
     private:
-        Mix_Chunk* music;
+        Mix_Music* music;
 };

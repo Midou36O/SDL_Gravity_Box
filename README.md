@@ -7,6 +7,19 @@ Making a "windowed" 2D box that makes the ball move when moving the window (just
 
 ![Preview](resources/prev.gif)
 
+# Controls (hardcoded)
+
+```
+  z    |        up
+q s d  | left down right
+
+r: resets the window and position of the characters.
+space: pause | play the music.
+a: quit.
+k: resize to 1080p.
+f: full screen.
+scroll wheel: increase / decrease speed.
+```
 # Why do i make this
 Because i absolutely fucking hate myself and i have to make something like that for a game (not free) i'm planning to code after exams.
 

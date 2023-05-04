@@ -12,6 +12,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 #include "renderwindow.hpp"
 #include "entity.hpp"
@@ -24,10 +25,30 @@
 #define FPS            60
 
 // Setup the delta time.
-double CurrentTime = SDL_GetTicks64();
+Uint32 lastTicks = SDL_GetTicks64();
 
 
-int main(int argc, char* args[]){
+// Smooth move.
+float move(int p_x, int p_y) {
+    int x = p_x;
+    int y = p_y;
+    if (p_x > x && p_y > y) {
+        int i;
+        for (i; i < p_x; i++) {
+            x = exp(x);
+        }
+        return x, y;
+    }
+    else {
+        return sqrt((p_x * p_x) + (p_y * p_y));
+    }
+
+    return 0;
+}
+
+
+
+int main(int argc, char* args[]) {
         // Add some files to this code.
         freopen( "output.txt", "w", stdout);
         freopen( "error.txt", "w", stderr );
@@ -47,11 +68,26 @@ int main(int argc, char* args[]){
 
         
         MusicPlayer music; 
-        // TODO: Make this thing usable.
-        Mix_Chunk* musicPlayer = music.loadMusic("src/res/bgm/bg.ogg");
 
+        music.initMusic();
         music.openAudio();
-        music.playMusic();
+        //Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_OPUS );
+        //Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+        if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+            std::cerr << "Failed to open audio! ERROR: " << Mix_GetError() << std::endl;
+        }
+        // TODO: Make this thing usable.
+        //Mix_Music* musicPlayer = music.loadMusic("src/res/bgm/bg.ogg");
+        
+        Mix_Music* musicPlayer = Mix_LoadMUS("src/res/bgm/bgm.ogg");
+        Mix_PlayMusic(musicPlayer, -1);
+
+        if (musicPlayer == NULL) {
+            std::cerr << "Failed to load music! ERROR: " << Mix_GetError() << std::endl;
+        }
+        
+        //music.openAudio();
+        //music.playMusic();
         
         RenderWindow window("DEMO ENGINE v0.0.1", SCREEN_WIDTH, SCREEN_HEIGHT);
                 
@@ -96,76 +132,163 @@ int main(int argc, char* args[]){
         // Position of the mouse. Y axis.
         int YPos_mo = 0;
 
+        int XPos_mo_sta = 1; 
+        int YPos_mo_sta = 1;
+
+        int Mus = 0;
+        
+        bool fs; 
+
         // Scale of the entity. Y axis. 
         int YPos_wh = 1;
 
         while (gameRunning){
+            Uint32 nowTicks = SDL_GetTicks64();
+
+            // Dt in seconds
+            float deltaTime = (nowTicks - lastTicks) * 0.001f;
+
+            lastTicks = nowTicks;
+
+
+
             while (SDL_PollEvent(&event)){
+                std::vector<Entity> entities = {
+                               Entity(Vector2f(XPos1,YPos1), faceSprite),
+                               Entity(Vector2f(XPos_mo_sta,YPos_mo_sta), faceSprite),
+                               Entity(Vector2f(XPos2,YPos2), faceSprite)
+                };
+                
                 // Poll the close event  
-                if (event.type == SDL_QUIT) {
+                if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_a ) {
                     gameRunning = false;
                 }
                 //User presses a key
                 else if( event.type == SDL_KEYDOWN ) {
                    switch (event.key.keysym.sym) {
                         case SDLK_z:
+                        for (int i=0; i < 50; i++) {
                         std::cout << "UP!" << std::endl;
                         std::cout << YPos2 << " <-- YPos Before" << std::endl;
-                        YPos2 = YPos2 -10 * YPos_wh;
+                        YPos2 = (YPos2 - 0.01) * YPos_wh  * 0.5;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
+                        }
                         break;
-
+                        
                         case SDLK_s:
                         std::cout << "DOWN!" << std::endl;
                         std::cout << YPos2 << " <-- YPos Before" << std::endl;
-                        YPos2 = YPos2 +10 * YPos_wh;
+                        YPos2 = YPos2 +10 * YPos_wh ;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
                         break;
 
                         case SDLK_q:
                         std::cout << "LEFT!" << std::endl;
                         std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        XPos2 = XPos2 -10 * YPos_wh;
+                        XPos2 = XPos2 -10 * YPos_wh ;
                         std::cout << YPos2 << " <-- YPos After" << std::endl;
                         break;
                                                                                
                         case SDLK_d:
                         std::cout << "RIGHT!" << std::endl;
                         std::cout << YPos2 << " <-- YPos Before" << std::endl;
-                        XPos2 = XPos2 +10 * YPos_wh;
+                        XPos2 = XPos2 +10 * YPos_wh ;
                         std::cout << YPos2 << " <-- YPos After" << std::endl;
                         break;
 
                         case SDLK_UP:
                         std::cout << "UP!" << std::endl;
                         std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        YPos1 = YPos1 -10 * YPos_wh;
+                        YPos1 = YPos1 -10 * YPos_wh ;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
                         break;
 
                         case SDLK_DOWN:
                         std::cout << "DOWN!" << std::endl;
                         std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        YPos1 = YPos1 +10 * YPos_wh;
+                        YPos1 = YPos1 +10 * YPos_wh ;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
                         break;
 
                         case SDLK_LEFT:
                         std::cout << "LEFT!" << std::endl;
                         std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        XPos1 = XPos1 -10 * YPos_wh;
+                        XPos1 = XPos1 -10 * YPos_wh ;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
                         break;
                                                                                
                         case SDLK_RIGHT:
                         std::cout << "RIGHT!" << std::endl;
                         std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        XPos1 = XPos1 +10 * YPos_wh;
+                        XPos1 = XPos1 +10 * YPos_wh ;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
                         break;
+
+                        case SDLK_r:
+                        std::cout << "RESET!" << std::endl;
+                        
+                            XPos1 = 0;
+                            YPos1 = 0;
+                            XPos2 = 240;
+                            YPos2 = 240;
+                            XPos_mo_sta = 1;
+                            YPos_mo_sta = 1;
+                            YPos_wh = 1;
+                            window.resetSize();
+                            window.setFullscreen(false);
+                        break;
+
+                        case SDLK_k:
+                        std::cout << "Set the window size to 1080p" << std::endl;
+                        window.setWindowSize(1920, 1080);
+                        break; 
+
+                        case SDLK_f:
+                        std::cout << "Fullscreen" << std::endl;
+                        fs = false;
+                        if (fs == true) {
+                            window.setFullscreen(false);
+                            fs = false;
+                        }
+                        else {
+                        window.setFullscreen(true);
+                        fs = true;
+                        }
+                        break;
+
+                        case SDLK_SPACE:
+                            if ( Mus == 1 ) {
+                                Mix_ResumeMusic();
+                                Mus = 0;
+                            }
+                            else {Mix_PauseMusic(); Mus = 1;};
+                        break;
                    } 
+                
                 }
 
+                else if (event.type == SDL_KEYUP ){
+                    switch (event.key.keysym.sym) {
+                        case SDLK_z:
+                        for (int i=0; i < 50; i++) {
+                        SDL_Delay(10);
+                        YPos2 = (YPos2 - 0.5) * YPos_wh * deltaTime / 2;
+                        
+                    }
+                        break;
+                    
+                    }
+                }
+                else if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            XPos_mo = { event.motion.x };
+                            YPos_mo = { event.motion.y };
+                            std::cout << "CLICK LEFT!" << std::endl;
+                            XPos_mo_sta = XPos_mo;
+                            std::cout << "XPos_mo_sta is " << XPos_mo_sta << "." << std::endl;
+                            YPos_mo_sta = YPos_mo;
+                            std::cout << "YPos_mo_sta is " << YPos_mo_sta << "." << std::endl;
+                }
+                               
                 // Get the mouse position on the window.
                 else if (event.type == SDL_MOUSEMOTION) {   
                  XPos_mo = { event.motion.x };
@@ -182,35 +305,44 @@ int main(int argc, char* args[]){
                     YPos_wh--;
                     }
                  }
-                 
+                
                  std::cout << "Scrolling is at" << YPos_wh << "." << std::endl;
                 }  
-                double LastTime = SDL_GetTicks64();
-                double DeltaTime = ( LastTime - CurrentTime ) / 1000.0f;
 
-                if (DeltaTime != 0) {
-                std::cout << "FPS: " << DeltaTime << "." << std::endl;
-                std::cout << "TimeStart : " << CurrentTime << "." << std::endl;
-                std::cout << "TimeEnd : " << LastTime << "." << std::endl;
+                if ((nowTicks - lastTicks) > 1000) {
+                    lastTicks = 0;
+                }
+
+                // Reminder: Condition ? value if true : value if false
+                float fps = (deltaTime > 0) ? 1000.0f / deltaTime : 0.0f;
+
+                if (deltaTime != 0) {
+                std::cout << "FPS: " << fps << "." << std::endl;
+                std::cout << "TimeStart : " << nowTicks << "." << std::endl;
+                std::cout << "TimeEnd : " << lastTicks << "." << std::endl;
                 }       
+
+
 
                 window.getWinPos(WPosX, WPosY);
                 std::cout << "Position of window is " << WPosX << "," << WPosY << "." << std::endl;
-                std::vector<Entity> entities = {
-                               Entity(Vector2f(XPos1,YPos1), faceSprite),
-                               Entity(Vector2f(XPos_mo-120,YPos_mo-120), faceSprite),
-                               Entity(Vector2f(XPos2,YPos2), faceSprite)
-                };
+//                std::vector<Entity> entities = {
+//                               Entity(Vector2f(XPos1,YPos1), faceSprite),
+//                               Entity(Vector2f(XPos_mo-120,YPos_mo-120), faceSprite),
+//                               Entity(Vector2f(XPos2,YPos2), faceSprite)
+//                };
 
                 // Clear the render
                 window.clear();
                 // Render the faces (3)
                      for (Entity& face : entities){                
-                        window.render(face, YPos_wh); 
+                        window.render(face, XPos_mo_sta, YPos_mo_sta); 
                     };
                 // Update the render with a new frame.
-                window.display();                                              
+                window.display();
 
+                // Reduce the CPU usage.                                              
+                SDL_Delay(1);
 
 
 
