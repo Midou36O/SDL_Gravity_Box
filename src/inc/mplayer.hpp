@@ -11,7 +11,7 @@ class MusicPlayer {
         Mix_Music* loadMusic(const char* p_filepath);
         void initMusic();
         void playMusic();
-        void openAudio();
+        int openAudio();
         void closeAudio();
         void freeMusic();
     private:

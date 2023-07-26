@@ -30,6 +30,6 @@ class Entity {
 
     private:
         Vector2f pos; 
-        SDL_Rect currentFrame;
         SDL_Texture* tex;
+        SDL_Rect currentFrame;
 };

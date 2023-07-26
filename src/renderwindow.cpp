@@ -87,11 +87,12 @@ void RenderWindow::setFullscreen(bool fullscreen)
     }
 }
 
-// Render the rectangle, Looks for the entity class.
-// Takes the Entity value and the scale factor.
-// @param Entity The entity to render.
-// @param Pos_h The scale factor for the height.
-// @param Pos_w The scale factor for the width.
+/** Render the rectangle, Looks for the entity class.
+/  Takes the Entity value and the scale factor.
+/  @param Entity The entity to render.
+/  @param Pos_w The scale factor for the width.  
+/  @param Pos_h The scale factor for the height.
+*/
 void RenderWindow::render(Entity& p_entity, int Pos_w, int Pos_h)
 {
     // Render a rectangle from source. Takes the x, y , w(idth) and h(eight) of the rectangle.
@@ -116,3 +117,6 @@ void RenderWindow::display()
 {
     SDL_RenderPresent(renderer);
 }
+
+
+

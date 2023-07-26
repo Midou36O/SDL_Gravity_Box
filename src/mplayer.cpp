@@ -32,8 +32,16 @@ void MusicPlayer::initMusic() {
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_OPUS );
 }
 
-void MusicPlayer::openAudio() {
+int MusicPlayer::openAudio() {
     Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+        std::cerr << "Failed to open audio! ERROR: " << Mix_GetError() << std::endl;
+        return -1;
+    }
+    else {
+        std::cout << "Audio opened successfully!" << std::endl;
+        return 0;
+    }
 }
 
 Mix_Music* MusicPlayer::loadMusic(const char* p_filepath) {

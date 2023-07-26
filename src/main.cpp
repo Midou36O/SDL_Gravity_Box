@@ -71,9 +71,8 @@ int main(int argc, char* args[]) {
 
         music.initMusic();
         music.openAudio();
-        //Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_OPUS );
-        //Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
-        if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+        int audiostat = music.openAudio();
+        if (audiostat == -1) {
             std::cerr << "Failed to open audio! ERROR: " << Mix_GetError() << std::endl;
         }
         // TODO: Make this thing usable.
@@ -149,8 +148,9 @@ int main(int argc, char* args[]) {
             float deltaTime = (nowTicks - lastTicks) * 0.001f;
 
             lastTicks = nowTicks;
-
-
+            float fps = 1.0f / deltaTime;
+            fps += deltaTime;
+            std::cout << "FPS 2: " << fps << std::endl;
 
             while (SDL_PollEvent(&event)){
                 std::vector<Entity> entities = {
