@@ -17,6 +17,7 @@ class RenderWindow {
     public:
         RenderWindow(const char* p_title, int p_w, int p_h);
         SDL_Texture* loadTexture(const char* p_filePath); 
+        void GLInit();
         void cleanUp();
         int getWinPos(int *WinPosX, int *WinPosY);
         void clear();
@@ -25,6 +26,7 @@ class RenderWindow {
         void setFullscreen(bool fullscreen);
         void render(Entity &p_entity, int Pos_w, int Pos_h);
         void display();
+        void swap();
  
     private:
         /**

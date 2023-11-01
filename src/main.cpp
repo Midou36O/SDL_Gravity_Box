@@ -5,12 +5,16 @@
  * @date 2023-04-17
  * 
  */
+
+#include "glad/glad.h"  
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+//#include <SDL2/SDL_opengl.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
 
@@ -26,47 +30,128 @@
 
 // Setup the delta time.
 Uint32 lastTicks = SDL_GetTicks64();
+// Allow the keystate to be saved.
+const Uint8* keystate = SDL_GetKeyboardState(NULL); 
+
+// Vert and Frag Sources.
+const char *vrtxShdrSrc = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+const char *frgmntShdrSrc = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
 
 
-// Smooth move.
-float move(int p_x, int p_y) {
-    int x = p_x;
-    int y = p_y;
-    if (p_x > x && p_y > y) {
-        int i;
-        for (i; i < p_x; i++) {
-            x = exp(x);
-        }
-        return x, y;
-    }
-    else {
-        return sqrt((p_x * p_x) + (p_y * p_y));
-    }
-
-    return 0;
-}
-
+float vertices[] = {
+  -0.5f, -0.5f, 0.0f, // left  
+   0.5f, -0.5f, 0.0f, // right 
+   0.0f,  0.5f, 0.0f  // top
+};
 
 
 int main(int argc, char* args[]) {
+ 
+        // Clear the files before starting the game.
+        std::ofstream ofs;
+        ofs.open("output.txt", std::ofstream::out | std::ofstream::trunc);  
+        ofs.close();
+        ofs.open("error.txt", std::ofstream::out | std::ofstream::trunc);   
+        ofs.close(); 
+
         // Add some files to this code.
         freopen( "output.txt", "w", stdout);
         freopen( "error.txt", "w", stderr );
 
         std::cout << "-----------------------[ SDL START ! ]-----------------------"  << std::endl;
+        // Add OpenGL Contexts.
+        // TODO: This should be out of this file. Currently i have to declare this before SDL even inits the window and the context for some reason.
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);                          
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);                          
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); 
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);                                   
+        
+        
         
         // Init the SDL video.
         if (SDL_Init(SDL_INIT_VIDEO) > 0 ) {
         std::cerr << "SDL_Init defenitely failed here... ERROR: " << SDL_GetError() << std::endl;
-        return 2;
-    }
+        return 1;
+        }
         // Init the image.
         if (!(IMG_Init(IMG_INIT_PNG))) {
         std::cerr << "IMG_Init failed, but this is still a good progress! ERROR: " << SDL_GetError() << std::endl;
-        return 3;
+        return 1;
         }
+          // For some reason this breaks the code, investigate please.
+        // Init GLAD.
+        //if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        //std::cerr << "Failed to initialize GLAD. ERROR: " << SDL_GetError() << std::endl;
+        //return 1;
+        //}
 
-        
+      RenderWindow window("DEMO ENGINE v0.0.1", SCREEN_WIDTH, SCREEN_HEIGHT); 
+
+      // OpenGL Code, to be moved properly later.
+      
+      window.GLInit();
+
+      unsigned int VBO, VAO;
+      // Generate the buffer. Takes the number of buffers and the buffer.
+      glGenBuffers(1, &VBO);
+      // Bind the buffer. Takes the type of the buffer and the buffer.
+      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      // Buffer the data. Takes the type of the buffer, the size of the data, the data, and the usage of the buffer.
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+      unsigned int vrtxShdr, frgmntShdr;
+      vrtxShdr = glCreateShader(GL_VERTEX_SHADER);
+      frgmntShdr = glCreateShader(GL_FRAGMENT_SHADER);
+      // Takes the shader, the number of strings, the string, and the length of the string.
+      glShaderSource(vrtxShdr, 1, &vrtxShdrSrc, NULL); 
+      glShaderSource(frgmntShdr, 1, &frgmntShdrSrc, NULL);
+      glCompileShader(vrtxShdr);
+      glCompileShader(frgmntShdr);
+
+      unsigned int shdrPrg;
+      shdrPrg = glCreateProgram();
+      // You're in page 33 of the book. Chapter 5.5 Linking Vertex Attributes. The top.
+      glAttachShader(shdrPrg,vrtxShdr);
+      glAttachShader(shdrPrg,frgmntShdr);
+      glLinkProgram(shdrPrg);
+      glUseProgram(shdrPrg);
+      glDeleteShader(vrtxShdr);
+      glDeleteShader(frgmntShdr);
+
+      /*
+      * The vertex attribute interprets the vertex data (per vertex attribute.) It takes the following options. 
+      *
+      * \param 0 Location of the vertex
+      * \param 3 The length of the vertex
+      * \param GL_FLOAT The type of the data
+      * \param GL_FALSE Normalize the data? As in. If it's float, it goes float, if it's signed, it does signed, if it's integer, it goes integer.
+      * \param 3 * sizeof(float) The stride of the data. 
+      * \param (void*)0 The offset of the data.
+      */
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+      glEnableVertexAttribArray(0);
+      
+      glGenVertexArrays(1, &VAO);
+      glBindVertexArray(VAO);
+      glBindBuffer(GL_ARRAY_BUFFER, VBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+      glEnableVertexAttribArray(0);
+
+      
+
+  // End OpenGL Code.
         MusicPlayer music; 
 
         music.initMusic();
@@ -84,11 +169,11 @@ int main(int argc, char* args[]) {
         if (musicPlayer == NULL) {
             std::cerr << "Failed to load music! ERROR: " << Mix_GetError() << std::endl;
         }
-        
+
         //music.openAudio();
         //music.playMusic();
         
-        RenderWindow window("DEMO ENGINE v0.0.1", SCREEN_WIDTH, SCREEN_HEIGHT);
+        
                 
 
         // Load the texture.
@@ -135,6 +220,8 @@ int main(int argc, char* args[]) {
         int YPos_mo_sta = 1;
 
         int Mus = 0;
+
+        float g = 0.0f;
         
         bool fs; 
 
@@ -149,8 +236,6 @@ int main(int argc, char* args[]) {
 
             lastTicks = nowTicks;
             float fps = 1.0f / deltaTime;
-            fps += deltaTime;
-            std::cout << "FPS 2: " << fps << std::endl;
 
             while (SDL_PollEvent(&event)){
                 std::vector<Entity> entities = {
@@ -167,12 +252,10 @@ int main(int argc, char* args[]) {
                 else if( event.type == SDL_KEYDOWN ) {
                    switch (event.key.keysym.sym) {
                         case SDLK_z:
-                        for (int i=0; i < 50; i++) {
                         std::cout << "UP!" << std::endl;
                         std::cout << YPos2 << " <-- YPos Before" << std::endl;
                         YPos2 = (YPos2 - 0.01) * YPos_wh  * 0.5;
                         std::cout << YPos1 << " <-- YPos After" << std::endl;
-                        }
                         break;
                         
                         case SDLK_s:
@@ -196,34 +279,6 @@ int main(int argc, char* args[]) {
                         std::cout << YPos2 << " <-- YPos After" << std::endl;
                         break;
 
-                        case SDLK_UP:
-                        std::cout << "UP!" << std::endl;
-                        std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        YPos1 = YPos1 -10 * YPos_wh ;
-                        std::cout << YPos1 << " <-- YPos After" << std::endl;
-                        break;
-
-                        case SDLK_DOWN:
-                        std::cout << "DOWN!" << std::endl;
-                        std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        YPos1 = YPos1 +10 * YPos_wh ;
-                        std::cout << YPos1 << " <-- YPos After" << std::endl;
-                        break;
-
-                        case SDLK_LEFT:
-                        std::cout << "LEFT!" << std::endl;
-                        std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        XPos1 = XPos1 -10 * YPos_wh ;
-                        std::cout << YPos1 << " <-- YPos After" << std::endl;
-                        break;
-                                                                               
-                        case SDLK_RIGHT:
-                        std::cout << "RIGHT!" << std::endl;
-                        std::cout << YPos1 << " <-- YPos Before" << std::endl;
-                        XPos1 = XPos1 +10 * YPos_wh ;
-                        std::cout << YPos1 << " <-- YPos After" << std::endl;
-                        break;
-
                         case SDLK_r:
                         std::cout << "RESET!" << std::endl;
                         
@@ -237,8 +292,7 @@ int main(int argc, char* args[]) {
                             window.resetSize();
                             window.setFullscreen(false);
                         break;
-
-                        case SDLK_k:
+                            case SDLK_k:
                         std::cout << "Set the window size to 1080p" << std::endl;
                         window.setWindowSize(1920, 1080);
                         break; 
@@ -266,19 +320,27 @@ int main(int argc, char* args[]) {
                    } 
                 
                 }
-
-                else if (event.type == SDL_KEYUP ){
-                    switch (event.key.keysym.sym) {
-                        case SDLK_z:
-                        for (int i=0; i < 50; i++) {
-                        SDL_Delay(10);
-                        YPos2 = (YPos2 - 0.5) * YPos_wh * deltaTime / 2;
-                        
+                
+                
+                
+                    //continuous-response keys
+                    if(keystate[SDL_SCANCODE_LEFT])
+                    {
+                     XPos1 = XPos1 - 10 * YPos_wh;
                     }
-                        break;
-                    
+                    if(keystate[SDL_SCANCODE_RIGHT])
+                    {
+                      XPos1 = XPos1 + 10 * YPos_wh;
                     }
-                }
+                    if(keystate[SDL_SCANCODE_UP])
+                    {
+                      YPos1 = YPos1 - 10 * YPos_wh;
+                    }
+                    if(keystate[SDL_SCANCODE_DOWN])
+                    {
+                      YPos1 = YPos1 + 10 * YPos_wh;
+                    }
+                
                 else if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                             XPos_mo = { event.motion.x };
                             YPos_mo = { event.motion.y };
@@ -297,22 +359,22 @@ int main(int argc, char* args[]) {
                 }  
                 else if (event.type == SDL_MOUSEWHEEL) {   
                  if (event.wheel.y > 0 ){
+                    g=g+0.2f;
                     YPos_wh++;
                  } else if (event.wheel.y < 0 ) {
                     if (YPos_wh <= 1) {
                         YPos_wh = 1;
                     } else {
+                    g=g-0.2f; 
                     YPos_wh--;
                     }
                  }
                 
                  std::cout << "Scrolling is at" << YPos_wh << "." << std::endl;
                 }  
-
-                if ((nowTicks - lastTicks) > 1000) {
-                    lastTicks = 0;
-                }
-
+            
+                
+                
                 // Reminder: Condition ? value if true : value if false
                 float fps = (deltaTime > 0) ? 1000.0f / deltaTime : 0.0f;
 
@@ -331,7 +393,16 @@ int main(int argc, char* args[]) {
 //                               Entity(Vector2f(XPos_mo-120,YPos_mo-120), faceSprite),
 //                               Entity(Vector2f(XPos2,YPos2), faceSprite)
 //                };
+            // Yeah yeah i know this is OpenGL again but deal with it B) 
 
+            glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            glUseProgram(shdrPrg);
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glClearColor(0.0f, g, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            window.swap();
+            // End OpenGL Code.
                 // Clear the render
                 window.clear();
                 // Render the faces (3)
@@ -345,15 +416,18 @@ int main(int argc, char* args[]) {
                 SDL_Delay(1);
 
 
-
             }
            
             
         }
+        // Make sure things close properly.
+        SDL_Delay(3);
         // Close the audio.
         music.closeAudio();
         // Free the chunk.
         music.freeMusic();
+        // Allow the music player to close properly too.
+        SDL_Delay(3);
         // Destroy the window.
         window.cleanUp();
         std::cout << "-----------------------[ SDL EXITING ! ]-----------------------"  << std::endl;

@@ -1,5 +1,7 @@
+#include "glad/glad.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+//#include <SDL2/SDL_opengl.h>
 #include <stdio.h>
 #include <iostream>
 
@@ -9,17 +11,30 @@
 // Creates a new window to render content in it.
 // Takes the Title name, w(idth) and h(eight) of the window.
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
+//
+        
+//
         // Create a pointer for window and render and point them to NULL.
         :window(NULL), renderer(NULL)
         {
-            window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_SHOWN);
+            window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
             // Fail if the window did not init.
             if (window == NULL) {
             std::cerr << "Window failed to init, ERROR: " << SDL_GetError() << std::endl;
             }
 
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            
+            SDL_GLContext context;
+            context = SDL_GL_CreateContext(window); 
+            gladLoadGLLoader(SDL_GL_GetProcAddress);
+            SDL_GL_MakeCurrent(window, context);
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
         }
 
 /**
@@ -47,6 +62,12 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath){
     // Return the texture.
     return texture;
 }
+void RenderWindow::GLInit() {
+
+// Stub.
+
+}
+
 
 // Destroys the window. Used when closing the window.
 void RenderWindow::cleanUp()
@@ -118,5 +139,10 @@ void RenderWindow::display()
     SDL_RenderPresent(renderer);
 }
 
+// Swap the buffers.
+void RenderWindow::swap()
+{
+    SDL_GL_SwapWindow(window);
+}
 
 
