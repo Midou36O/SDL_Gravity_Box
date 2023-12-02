@@ -54,7 +54,7 @@ Copy the `res/img` directory to the `build` folder. The executable files for thi
 
 or simply run this
 
-`g++ -c src/*.cpp -std=c++14 -m64 -g -Wall -I src/inc && g++ *.o -o bin/debug/main -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer && gdb ./bin/debug/main`
+`g++ -c src/*.cpp src/*.c -std=c++14 -m64 -g -Wall -I src/inc && g++ *.o -o bin/debug/main -lGL -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer && gdb ./bin/debug/main`
 
 (NOTE: running gdb will require you to type `run` to run the program, remove gdb if you don't want to debug the program.)
 

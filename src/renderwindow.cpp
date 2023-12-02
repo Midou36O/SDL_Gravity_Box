@@ -4,7 +4,7 @@
 //#include <SDL2/SDL_opengl.h>
 #include <stdio.h>
 #include <iostream>
-
+//#include <tuple>
 #include "entity.hpp"
 #include "renderwindow.hpp"
 
@@ -62,6 +62,7 @@ SDL_Texture* RenderWindow::loadTexture(const char* p_filePath){
     // Return the texture.
     return texture;
 }
+
 void RenderWindow::GLInit() {
 
 // Stub.
@@ -76,13 +77,25 @@ void RenderWindow::cleanUp()
 }
 
 // Gets the position of the window. 
-// TODO: This line Does nothing since it's "void" (aka doesn't return anything). Make it return something! 
+// Takes the x and y position of the window.
+// Returns the position of the window.
+
+// usage of auto before declaring the function.
+// auto is used to automatically deduce the type of the variable that is being declared.
+// In this case, the type of the variable is std::tuple<int, int>.
+// std::tuple is a class that is used to return multiple values from a function.
+// In this case, the function returns the x and y position of the window.
+// The function returns a tuple of two integers.
+// The first integer is the x position of the window.
+// The second integer is the y position of the window.
+// The function takes two pointers to integers as parameters.
+//
 int RenderWindow::getWinPos(int *WinPosX, int *WinPosY)
 {
     SDL_GetWindowPosition(window, WinPosX, WinPosY);
+    //return std::make_tuple(*WinPosX, *WinPosY);
     return 0;
-}
-
+   }
 // Clears the rendered image.
 void RenderWindow::clear()
 {

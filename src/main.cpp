@@ -34,18 +34,20 @@ Uint32 lastTicks = SDL_GetTicks64();
 const Uint8* keystate = SDL_GetKeyboardState(NULL); 
 
 // Vert and Frag Sources.
-const char *vrtxShdrSrc = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+const char *vrtxShdrSrc =   "#version 330 core\n"
+                            "layout (location = 0) in vec3 aPos;\n"
+                            "void main()\n"
+                            "{\n"
+                            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                            "}\0";
 const char *frgmntShdrSrc = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+                            "out vec4 FragColor;\n"
+                            "uniform vec4 ourColor;\n" // ourColor essentially comes from fragment shader, we'll declare it.
+                            "void main()\n"
+                            "{\n"
+                            "   FragColor = ourColor;\n" 
+//                          "   FragColor = vec4(.5f, 0.0f, 0.0f, 1.0f);\n"
+                            "}\n\0";
 
 
 float vertices[] = {
@@ -118,6 +120,7 @@ int main(int argc, char* args[]) {
       glShaderSource(frgmntShdr, 1, &frgmntShdrSrc, NULL);
       glCompileShader(vrtxShdr);
       glCompileShader(frgmntShdr);
+  
 
       unsigned int shdrPrg;
       shdrPrg = glCreateProgram();
@@ -229,6 +232,9 @@ int main(int argc, char* args[]) {
         int YPos_wh = 1;
 
         while (gameRunning){
+            // Clear the render
+            window.clear();
+
             Uint32 nowTicks = SDL_GetTicks64();
 
             // Dt in seconds
@@ -237,6 +243,16 @@ int main(int argc, char* args[]) {
             lastTicks = nowTicks;
             float fps = 1.0f / deltaTime;
 
+            float timeValue = (float)SDL_GetTicks64()/100; // No idea if that will work, but we're supposed to get the time in milliseconds to seconds.                                                                                                                 
+            float greenValue = (sin(timeValue)/ 2.0f) + 0.5f; // sinus function is there since we're using cmath don't worry. Get the time value in seconds, divide it by 2, and add, 0.5f. The sinus function we made essentially avoids going to negative values. 
+
+            int count = 0;
+            if (count == 1000) {
+            std::cout << "[SEC]: "<< timeValue << " seconds elapsed." << std::endl;
+            std::cout << "[SIN]: the sine is " << greenValue << std::endl;
+            count = 0;
+            }
+            count++;
             while (SDL_PollEvent(&event)){
                 std::vector<Entity> entities = {
                                Entity(Vector2f(XPos1,YPos1), faceSprite),
@@ -317,6 +333,9 @@ int main(int argc, char* args[]) {
                             }
                             else {Mix_PauseMusic(); Mus = 1;};
                         break;
+
+                        default:
+                        break;
                    } 
                 
                 }
@@ -341,7 +360,7 @@ int main(int argc, char* args[]) {
                       YPos1 = YPos1 + 10 * YPos_wh;
                     }
                 
-                else if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                    else if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                             XPos_mo = { event.motion.x };
                             YPos_mo = { event.motion.y };
                             std::cout << "CLICK LEFT!" << std::endl;
@@ -349,7 +368,7 @@ int main(int argc, char* args[]) {
                             std::cout << "XPos_mo_sta is " << XPos_mo_sta << "." << std::endl;
                             YPos_mo_sta = YPos_mo;
                             std::cout << "YPos_mo_sta is " << YPos_mo_sta << "." << std::endl;
-                }
+                    }
                                
                 // Get the mouse position on the window.
                 else if (event.type == SDL_MOUSEMOTION) {   
@@ -385,9 +404,11 @@ int main(int argc, char* args[]) {
                 }       
 
 
-
+                // Get window position.
                 window.getWinPos(WPosX, WPosY);
-                std::cout << "Position of window is " << WPosX << "," << WPosY << "." << std::endl;
+                //std::cout << "Window position is " << SDL_GetWindowPosition(window.window, WPosX, WPosY) << "." << std::endl;
+                std::cout << "Window position is " << 0 << "," << 0 << "." << std::endl;
+
 //                std::vector<Entity> entities = {
 //                               Entity(Vector2f(XPos1,YPos1), faceSprite),
 //                               Entity(Vector2f(XPos_mo-120,YPos_mo-120), faceSprite),
@@ -395,22 +416,26 @@ int main(int argc, char* args[]) {
 //                };
             // Yeah yeah i know this is OpenGL again but deal with it B) 
 
-            glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            glViewport(0+SCREEN_WIDTH/4, 0, SCREEN_WIDTH/2, SCREEN_HEIGHT);
             glUseProgram(shdrPrg);
+            int vertexColorLoc = glGetUniformLocation(shdrPrg, "ourColor"); 
+            glUniform4f(vertexColorLoc, 0.0f, greenValue, 0.0f, 1.0f);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 3);
             glClearColor(0.0f, g, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            window.swap();
+       
             // End OpenGL Code.
-                // Clear the render
-                window.clear();
                 // Render the faces (3)
+                // NOTE: Interesting, quitting the engine crashes the game when this is here.
+                // NOTE: Removing this piece of code stops the frame updates. Investigate.
+                // NOTE: Check the SDL Polling event. It Delays after excessive usage of mouse movement and slows the rendering.
                      for (Entity& face : entities){                
                         window.render(face, XPos_mo_sta, YPos_mo_sta); 
                     };
                 // Update the render with a new frame.
                 window.display();
+                window.swap(); 
 
                 // Reduce the CPU usage.                                              
                 SDL_Delay(1);
