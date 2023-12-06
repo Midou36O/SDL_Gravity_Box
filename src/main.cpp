@@ -257,7 +257,7 @@ int main(int argc, char *args[]) {
     float timeValue = (float)SDL_GetTicks64() / 100;
     // No idea if that will work, but we're supposed to
     // get the time in milliseconds to seconds.
-    float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    double greenValue = (sin(timeValue) / 2.0f) + 0.5f;
     // sinus function is there since we're using cmath don't worry.
     // Get the time value in seconds, divide it by 2, and add, 0.5f.
     // The sinus function we made essentially avoids going to negative
