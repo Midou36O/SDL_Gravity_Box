@@ -34,6 +34,10 @@ include_directories("src/inc/KHR")
 # include .hpp files
 include_directories("src/inc")
 
+# Dear ImGui
+include_directories("src/inc/imgui")
+include_directories("src/inc/imgui/backends")
+
 file(
   GLOB
   SOURCES
@@ -41,7 +45,8 @@ file(
   "src/*.c"
   "src/inc/*.hpp"
   "src/inc/glad/glad.h"
-  "src/inc/KHR/khrplatform.h")
+  "src/inc/KHR/khrplatform.h"
+  "src/inc/imgui/*.cpp")
 
 add_executable(SDL_Gravity_Box ${SOURCES})
 # FIXME: OpenGL will only work on linux according to the docs if
@@ -49,5 +54,6 @@ add_executable(SDL_Gravity_Box ${SOURCES})
 # this portable, hint: use OpenGL::* (This is not explained in detail by Cmake
 # Docs so better fix it once I have internet.)
 target_link_libraries(
-  SDL_Gravity_Box PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES}
-                          ${SDL2_MIXER_LIBRARIES} ${OPENGL_LIBRARIES})
+  SDL_Gravity_Box
+  PRIVATE ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_MIXER_LIBRARIES}
+          ${OPENGL_LIBRARIES} ${IMGUI_LIBRARIES})
