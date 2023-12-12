@@ -16,10 +16,7 @@
 #include <iostream>
 #include <stdio.h>
 // #include <string>
-#include <vector>
 
-#include "entity.hpp"
-#include "math.hpp"
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
 
@@ -521,6 +518,7 @@ int main(int argc, char *args[]) {
     // Since we're now having 2 vertexes we need to delay the offset location.
     // TODO: Explain this better!
     // Color
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
