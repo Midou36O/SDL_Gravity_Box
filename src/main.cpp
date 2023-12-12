@@ -19,6 +19,7 @@
 
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
+#include "shader.hpp"
 
 // Import dearimgui
 #include "imgui.h"
@@ -37,37 +38,6 @@ int SCREEN_HEIGHT = DEFAULT_SCREEN_HEIGHT;
 Uint32 lastTicks = SDL_GetTicks64();
 // Allow the keystate to be saved.
 const Uint8 *keystate = SDL_GetKeyboardState(NULL);
-
-// Vert and Frag Sources.
-const char *vrtxShdrSrc =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n" // We're adding the color variable
-                                              // since we added new color
-                                              // variables in the vertices
-                                              // variable.
-    "out vec3 ourColor;\n"                    // We export that color variable
-
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n" // Position of the OpenGL.
-    "   ourColor = aColor;\n" // The ourColor becomes the variable aColor,
-                              // mentionend in colors.
-    "}\0";
-const char *frgmntShdrSrc =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec3 ourColor;\n" // We'll need that exported color variable we declared
-                          // earlier.
-
-    "void main()\n"
-    "{\n"
-
-    "   FragColor = vec4(ourColor, 1.0f);\n" // Color of the fragments. It works
-                                             // fine...ish? (No color output?)
-    //"   FragColor = ourColor;\n"
-    //"   FragColor = vec4(.5f, 0.0f, 0.0f, 1.0f);\n"
-    "}\n\0";
 
 float vertices[] = {
     // Since we're going to implement multiple colors now, we're going to have
@@ -127,11 +97,8 @@ int main(int argc, char *args[]) {
   // Imgui init
   window.ImGuiInit();
 
-  // Print the opengl version using.
-
-  std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "OpenGL Vendor: " << glGetString(GL_VENDOR) << std::endl;
-  std::cout << "OpenGL Renderer: " << glGetString(GL_RENDERER) << std::endl;
+  Shader shader("src/res/shaders/vertx_shader.vs",
+                "src/res/shaders/frag_shader.fs");
 
   unsigned int VBO, VAO;
   // Generate the buffer. Takes the number of buffers and the buffer.
@@ -144,45 +111,6 @@ int main(int argc, char *args[]) {
   if (glGetError() > 0) {
     std::cerr << "Error!: " << glGetError() << std::endl;
   }
-
-  unsigned int vrtxShdr, frgmntShdr;
-  vrtxShdr = glCreateShader(GL_VERTEX_SHADER);
-  frgmntShdr = glCreateShader(GL_FRAGMENT_SHADER);
-  // Takes the shader, the number of strings, the string, and the length of
-  // the string.
-  glShaderSource(vrtxShdr, 1, &vrtxShdrSrc, NULL);
-  glShaderSource(frgmntShdr, 1, &frgmntShdrSrc, NULL);
-  glCompileShader(vrtxShdr);
-  int success;
-  glGetShaderiv(vrtxShdr, GL_COMPILE_STATUS, &success);
-  char infoLog[512];
-  if (!success) {
-    glGetShaderInfoLog(vrtxShdr, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-  glCompileShader(frgmntShdr);
-  glGetShaderiv(frgmntShdr, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(frgmntShdr, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  unsigned int shdrPrg;
-  shdrPrg = glCreateProgram();
-  glAttachShader(shdrPrg, vrtxShdr);
-  glAttachShader(shdrPrg, frgmntShdr);
-  glLinkProgram(shdrPrg);
-  glGetShaderiv(shdrPrg, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shdrPrg, 512, NULL, infoLog);
-    std::cerr << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
-              << infoLog << std::endl;
-  }
-  glUseProgram(shdrPrg);
-  glDeleteShader(vrtxShdr);
-  glDeleteShader(frgmntShdr);
 
   /*
    * The vertex attribute interprets the vertex data (per vertex attribute.)
@@ -231,36 +159,11 @@ int main(int argc, char *args[]) {
   // Game is running (true) by default.
   // This is currently used to keep the game up after rendering the frame.
   bool gameRunning = true;
+
   // Create a dummy SDL_Event to poll the events.
   SDL_Event event;
 
-  // Position of the first entity. X axis.
-  int XPos1 = 0;
-  // Position of the first entity. Y axis.
-  int YPos1 = 0;
-
-  // Position of the second entity. X axis.
-  int XPos2 = 240;
-  // Position of the second entity. Y axis.
-  int YPos2 = 240;
-
-  // Window position. X axis.
-  int *WPosX = 0;
-  // Window position. Y axis.
-  int *WPosY = 0;
-
-  // Position of the mouse. X axis.
-  int XPos_mo = 0;
-  // Position of the mouse. Y axis.
-  int YPos_mo = 0;
-
-  int XPos_mo_sta = 1;
-  int YPos_mo_sta = 1;
-
   int Mus = 0;
-
-  int count = 0;
-  int count1 = 0;
 
   // OpenGL background color.
   struct gl_color {
@@ -299,47 +202,19 @@ int main(int argc, char *args[]) {
       else if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
         case SDLK_z:
-          std::cout << "UP!" << std::endl;
-          std::cout << YPos2 << " <-- YPos Before" << std::endl;
-          YPos2 = (YPos2 - 0.01) * YPos_wh * 0.5;
-          vertices[5] += 0.5f;
-          std::cout << printVertices() << std::endl;
-          std::cout << YPos1 << " <-- YPos After" << std::endl;
           break;
 
         case SDLK_s:
-          std::cout << "DOWN!" << std::endl;
-          std::cout << YPos2 << " <-- YPos Before" << std::endl;
-          YPos2 = YPos2 + 10 * YPos_wh;
-          vertices[5] -= 0.5f;
-          std::cout << printVertices() << std::endl;
-          std::cout << YPos1 << " <-- YPos After" << std::endl;
           break;
 
         case SDLK_q:
-          std::cout << "LEFT!" << std::endl;
-          std::cout << YPos1 << " <-- YPos Before" << std::endl;
-          XPos2 = XPos2 - 10 * YPos_wh;
-          std::cout << YPos2 << " <-- YPos After" << std::endl;
           break;
 
         case SDLK_d:
-          std::cout << "RIGHT!" << std::endl;
-          std::cout << YPos2 << " <-- YPos Before" << std::endl;
-          XPos2 = XPos2 + 10 * YPos_wh;
-          std::cout << YPos2 << " <-- YPos After" << std::endl;
           break;
 
         case SDLK_r:
           std::cout << "RESET!" << std::endl;
-
-          XPos1 = 0;
-          YPos1 = 0;
-          XPos2 = 240;
-          YPos2 = 240;
-          XPos_mo_sta = 1;
-          YPos_mo_sta = 1;
-          YPos_wh = 1;
           window.resetSize();
           window.setFullscreen(false);
           window.clear();
@@ -360,19 +235,6 @@ int main(int argc, char *args[]) {
             fs = true;
           }
           break;
-
-        case SDLK_w:
-          if (wireframe == false) {
-            std::cout << "Wireframe mode on!" << std::endl;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            wireframe = true;
-            break;
-          } else {
-            std::cout << "Wireframe mode off!" << std::endl;
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            wireframe = false;
-            break;
-          }
 
         case SDLK_SPACE:
           if (Mus == 1) {
@@ -438,25 +300,11 @@ int main(int argc, char *args[]) {
     //   int delayTime = (int)((1.0f / TARGET_FPS - deltaTime) * 1000.0f);
     //   SDL_Delay(delayTime);
     // }
-
-    if (count == 60) {
-      std::cout << "[SEC]: " << timeValue << " seconds elapsed." << std::endl;
-      std::cout << "[SIN]: the sine is " << greenValue << std::endl;
-      count = 0;
-    }
-    count++;
     // std::vector<Entity> entities = {
     //     Entity(Vector2f(XPos1, YPos1), faceSprite),
     //     Entity(Vector2f(XPos_mo_sta, YPos_mo_sta), faceSprite),
     //     Entity(Vector2f(XPos2, YPos2), faceSprite)};
 
-    if (deltaTime != 0 && count1 == 60) {
-      std::cout << "FPS: " << fps << "." << std::endl;
-      std::cout << "TimeStart : " << nowTicks << "." << std::endl;
-      std::cout << "TimeEnd : " << lastTicks << "." << std::endl;
-      count1 = 0;
-    }
-    count1++;
     //// Get window position.
     // window.getWinPos(WPosX, WPosY);
     //// std::cout << "Window position is " <<
@@ -478,6 +326,8 @@ int main(int argc, char *args[]) {
     // FPS window
     ImGui::Begin("FPS");
     ImGui::Text("FPS: %f", fps);
+    ImGui::Text("Delta time: %f", deltaTime);
+    ImGui::Text("Time running: %d seconds.", SDL_GetTicks() / 1000);
     ImGui::End();
     // Window resolution window
     ImGui::Begin("Window resolution");
@@ -492,6 +342,8 @@ int main(int argc, char *args[]) {
     ImGui::SliderFloat3("Position1", &vertices[0], -1.0f, 1.0f);
     ImGui::SliderFloat3("Position2", &vertices[6 + 0], -1.0f, 1.0f);
     ImGui::SliderFloat3("Position3", &vertices[12 + 0], -1.0f, 1.0f);
+    // Wireframe mode
+    ImGui::Checkbox("Wireframe mode", &wireframe);
     ImGui::End();
     // OpenGL background color window
     ImGui::Begin("OpenGL background color");
@@ -514,7 +366,12 @@ int main(int argc, char *args[]) {
     // window.ImGuiRenderFinish();
 
     // Yeah yeah i know this is OpenGL again but deal with it B)
-
+    // Run wireframe mode if checked.
+    if (wireframe) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
     // Since we're now having 2 vertexes we need to delay the offset location.
     // TODO: Explain this better!
     // Color
@@ -533,7 +390,7 @@ int main(int argc, char *args[]) {
     // glViewport(0, 0, DEFAULT_SCREEN_WIDTH, SCREEN_HEIGHT);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    glUseProgram(shdrPrg);
+    shader.use();
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
