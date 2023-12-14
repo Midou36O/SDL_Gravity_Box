@@ -20,11 +20,21 @@
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
 #include "shader.hpp"
+#include "utils.hpp"
+// #include "gameloop.hpp"
 
-// Import dearimgui
+#define STB_IMAGE_IMPLEMENTATION
+#include "extras/stb_image.h"
+
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
+
+// GLM libs.
+#include "glm/glm.hpp"
+// I don't want to calculate matrices. Will fork if I need more advanced stuff.
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 // Screen resolution.
 #define DEFAULT_SCREEN_WIDTH 1280
@@ -42,25 +52,24 @@ const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 float vertices[] = {
     // Since we're going to implement multiple colors now, we're going to have
     // to separate the vertices:
-    //             VERTEX     COLOR
-    // STRUCTURE: [X][Y][Z][R][G][B]...
+    //             VERTEX     COLOR  TEXTURE
+    // STRUCTURE: [X][Y][Z][R][G][B][S][T]...
+    //  S means the X axis of the texture.
+    //  T means the Y axis of the texture.
     // Vertices             Colors
     // 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left, RED
     //-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right, GREEN
     // 0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top, BLUE
 
-    0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left, RED
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right, GREEN
-    0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top, BLUE
+    // clang-format off
+    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // left, RED, texture top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // right, GREEN, bottom right 
+   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // top, BLUE, bottom left 
+   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top, YELLOW, top left
+    // clang-format on
 };
 
-std::string printVertices() {
-  std::string verticesString = "";
-  for (int i = 0; i < 18; i++) {
-    verticesString += std::to_string(vertices[i]) + " ";
-  }
-  return verticesString;
-}
+unsigned int indices[] = {0, 1, 3, 1, 2, 3};
 
 int main(int argc, char *args[]) {
 
@@ -78,18 +87,11 @@ int main(int argc, char *args[]) {
   std::cout << "-----------------------[ SDL START ! ]-----------------------"
             << std::endl;
 
-  // Init the image.
-  if (!(IMG_Init(IMG_INIT_PNG))) {
-    std::cerr << "IMG_Init failed, but this is still a good progress! ERROR: "
-              << SDL_GetError() << std::endl;
-    return 1;
-  }
   // For some reason this breaks the code, investigate please.
 
-  RenderWindow window("DEMO ENGINE v0.0.1", DEFAULT_SCREEN_WIDTH,
-                      SCREEN_HEIGHT);
+  RenderWindow window("DEMO ENGINE v0.0.1", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-  // OpenGL Code, to be moved properly later.
+  DebugGL debugGL;
 
   window.GLInit();
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -100,17 +102,113 @@ int main(int argc, char *args[]) {
   Shader shader("src/res/shaders/vertx_shader.vs",
                 "src/res/shaders/frag_shader.fs");
 
-  unsigned int VBO, VAO;
+  unsigned int VBO, VAO, EBO;
   // Generate the buffer. Takes the number of buffers and the buffer.
   // Vertex
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
+  glGenBuffers(1, &EBO);
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  if (glGetError() > 0) {
-    std::cerr << "Error!: " << glGetError() << std::endl;
+  // Check for errors.
+  debugGL.CheckOpenGLError("ERROR: Could not create VAO and VBO", __FILE__,
+                           __LINE__);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
+
+  int w, h, nrChannels;
+  // FLip the texture vertically.
+  // This is because OpenGL looks for the coordinates from the bottom left, our
+  // textures are from the top left. So they get flipped.
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *data =
+      stbi_load("src/res/img/container.jpg", &w, &h, &nrChannels, 0);
+  unsigned int texture1, texture2;
+  glGenTextures(1, &texture1);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
+                              // basic wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
+                              // basic wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR); // Set texture filtering (interpolation) options
+                              // on the currently bound texture object
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // Apparently forgetting this line causes the texture to be black.
+  glBindTexture(GL_TEXTURE_2D, texture1);
+
+  // Set the texture wrapping/filtering options (on the currently bound texture
+  // object)
+  // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+
+  if (data) {
+    /*
+     * \param GL_TEXTURE_2D The texture target.
+     * \param 0 The mipmap level.
+     * \param GL_RGB The internal format of the texture.
+     * \param w The width of the texture.
+     * \param h The height of the texture.
+     * \param 0 The border of the texture. (legacy, should always be 0
+     * apparently.)
+     * \param GL_RGB The format of the pixel data.
+     * \param GL_UNSIGNED_BYTE The type of the pixel data.
+     * \param data The pixel data.
+     */
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+                 data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+  } else {
+    std::cerr << "Failed to load texture! ERROR: " << stbi_failure_reason()
+              << std::endl;
   }
+  stbi_image_free(data);
+
+  glGenTextures(1, &texture2);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
+                              // basic wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
+                              // basic wrapping method)
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR); // Set texture filtering (interpolation) options
+                              // on the currently bound texture object
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // Same thing here, forgetting this line causes the texture to be black.
+  glBindTexture(GL_TEXTURE_2D, texture2);
+
+  // Load the 2nd texture.
+  data = stbi_load("src/res/img/pop.png", &w, &h, &nrChannels, 0);
+  if (data) {
+    /*
+     * \param GL_TEXTURE_2D The texture target.
+     * \param 0 The mipmap level.
+     * \param GL_RGBA The internal format of the texture.
+     * \param w The width of the texture.
+     * \param h The height of the texture.
+     * \param 0 The border of the texture. (legacy, should always be 0
+     * apparently.)
+     * \param GL_RGBA The format of the pixel data.
+     * \param GL_UNSIGNED_BYTE The type of the pixel data.
+     * \param data The pixel data.
+     */
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+  } else {
+    std::cerr << "Failed to load texture! ERROR: " << stbi_failure_reason()
+              << std::endl;
+  }
+  stbi_image_free(data);
+  shader.use();
+  shader.setInt("texture2", 1);
 
   /*
    * The vertex attribute interprets the vertex data (per vertex attribute.)
@@ -336,12 +434,22 @@ int main(int argc, char *args[]) {
     // Triangle pos window
     ImGui::Begin("Triangle position And Color");
     // Color edit
-    ImGui::ColorEdit3("Triangle color1", &vertices[3]);
-    ImGui::ColorEdit3("Triangle color2", &vertices[9]);
-    ImGui::ColorEdit3("Triangle color3", &vertices[15]);
+    // We got 3 positions 3 shdr frg colors 2 tex pos
+    // Goddammit this is wrong!
+    // Reminder : [X][Y][Z][R][G][B][S][T]
+    // So 3 + 3 + 2 = 8 = > 8 - 1 = 7 is max normally. But 8 is for the offsets.
+    ImGui::ColorEdit3("square color1", &vertices[3]);
+    ImGui::ColorEdit3("square color2", &vertices[8 + 3]);
+    ImGui::ColorEdit3("square color3", &vertices[8 * 2 + 3]);
+    ImGui::ColorEdit3("square color4", &vertices[8 * 3 + 3]);
     ImGui::SliderFloat3("Position1", &vertices[0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position2", &vertices[6 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position3", &vertices[12 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat3("Position2", &vertices[8 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat3("Position3", &vertices[8 * 2 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat3("Position4", &vertices[8 * 3 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat2("Texture1", &vertices[6], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture2", &vertices[8 + 6], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture3", &vertices[8 * 2 + 6], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture4", &vertices[8 * 3 + 6], -2.0f, 2.0f);
     // Wireframe mode
     ImGui::Checkbox("Wireframe mode", &wireframe);
     ImGui::End();
@@ -376,13 +484,16 @@ int main(int argc, char *args[]) {
     // TODO: Explain this better!
     // Color
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                          (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // glViewport(0 + DEFAULT_SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 2,
     // SCREEN_HEIGHT); glViewport(0, 0, DEFAULT_SCREEN_WIDTH * 2, SCREEN_HEIGHT
@@ -390,7 +501,6 @@ int main(int argc, char *args[]) {
     // glViewport(0, 0, DEFAULT_SCREEN_WIDTH, SCREEN_HEIGHT);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    shader.use();
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
@@ -409,7 +519,18 @@ int main(int argc, char *args[]) {
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glActiveTexture(GL_TEXTURE0); // Activate the texture unit first before
+                                  // binding texture
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glActiveTexture(GL_TEXTURE1); // Activate the texture unit first before
+                                  // binding texture
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    if (glGetError() > 0) {
+      std::cerr << glGetError() << std::endl;
+    }
+    shader.use();
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }

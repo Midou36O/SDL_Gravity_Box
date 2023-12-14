@@ -14,6 +14,9 @@ set(OpenGL_GL_PREFERENCE GLVND)
 # sdl2
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
+# This is a hack since Dear ImGUi strictly asks for the SDL.h file and not the
+# directory containing it.
+include_directories("/usr/local/include/SDL2")
 
 # sdl2_image
 find_package(SDL2_image REQUIRED)
@@ -47,7 +50,6 @@ file(
   "src/inc/glad/glad.h"
   "src/inc/KHR/khrplatform.h"
   "src/inc/imgui/*.cpp")
-
 add_executable(SDL_Gravity_Box ${SOURCES})
 # FIXME: OpenGL will only work on linux according to the docs if
 # OPENGL_LIBRARIES and OEPNGL_GL_PREFERENCE is set! TODO: Find a way to make

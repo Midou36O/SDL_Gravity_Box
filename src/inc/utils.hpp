@@ -1,3 +1,7 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+class DebugGL {
+public:
+  void CheckOpenGLError(const char *stmt, const char *fname, int line);
+  void GLClearError();
+};

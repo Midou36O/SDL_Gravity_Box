@@ -153,6 +153,30 @@ src/entity.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/entity.cpp.s
 .PHONY : src/entity.cpp.s
 
+src/gameloop.o: src/gameloop.cpp.o
+.PHONY : src/gameloop.o
+
+# target to build an object file
+src/gameloop.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/gameloop.cpp.o
+.PHONY : src/gameloop.cpp.o
+
+src/gameloop.i: src/gameloop.cpp.i
+.PHONY : src/gameloop.i
+
+# target to preprocess a source file
+src/gameloop.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/gameloop.cpp.i
+.PHONY : src/gameloop.cpp.i
+
+src/gameloop.s: src/gameloop.cpp.s
+.PHONY : src/gameloop.s
+
+# target to generate assembly for a file
+src/gameloop.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/gameloop.cpp.s
+.PHONY : src/gameloop.cpp.s
+
 src/input.o: src/input.cpp.o
 .PHONY : src/input.o
 
@@ -273,6 +297,54 @@ src/renderwindow.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/renderwindow.cpp.s
 .PHONY : src/renderwindow.cpp.s
 
+src/shader.o: src/shader.cpp.o
+.PHONY : src/shader.o
+
+# target to build an object file
+src/shader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/shader.cpp.o
+.PHONY : src/shader.cpp.o
+
+src/shader.i: src/shader.cpp.i
+.PHONY : src/shader.i
+
+# target to preprocess a source file
+src/shader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/shader.cpp.i
+.PHONY : src/shader.cpp.i
+
+src/shader.s: src/shader.cpp.s
+.PHONY : src/shader.s
+
+# target to generate assembly for a file
+src/shader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/shader.cpp.s
+.PHONY : src/shader.cpp.s
+
+src/utils.o: src/utils.cpp.o
+.PHONY : src/utils.o
+
+# target to build an object file
+src/utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/utils.cpp.o
+.PHONY : src/utils.cpp.o
+
+src/utils.i: src/utils.cpp.i
+.PHONY : src/utils.i
+
+# target to preprocess a source file
+src/utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/utils.cpp.i
+.PHONY : src/utils.cpp.i
+
+src/utils.s: src/utils.cpp.s
+.PHONY : src/utils.s
+
+# target to generate assembly for a file
+src/utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/utils.cpp.s
+.PHONY : src/utils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -285,6 +357,9 @@ help:
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"
+	@echo "... src/gameloop.o"
+	@echo "... src/gameloop.i"
+	@echo "... src/gameloop.s"
 	@echo "... src/input.o"
 	@echo "... src/input.i"
 	@echo "... src/input.s"
@@ -300,6 +375,12 @@ help:
 	@echo "... src/renderwindow.o"
 	@echo "... src/renderwindow.i"
 	@echo "... src/renderwindow.s"
+	@echo "... src/shader.o"
+	@echo "... src/shader.i"
+	@echo "... src/shader.s"
+	@echo "... src/utils.o"
+	@echo "... src/utils.i"
+	@echo "... src/utils.s"
 .PHONY : help
 
 
