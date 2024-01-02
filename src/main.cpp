@@ -17,10 +17,15 @@
 #include <stdio.h>
 // #include <string>
 
+#include "glm/ext/matrix_transform.hpp"
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
-#include "shader.hpp"
 #include "utils.hpp"
+#include "vertx/EBO.hpp"
+#include "vertx/VAO.hpp"
+#include "vertx/VBO.hpp"
+#include "vertx/shader.hpp"
+
 // #include "gameloop.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -55,7 +60,7 @@ float vertices[] = {
     //             VERTEX     COLOR  TEXTURE
     // STRUCTURE: [X][Y][Z][R][G][B][S][T]...
     //  S means the X axis of the texture.
-    //  T means the Y axis of the texture.
+    //  T means the Y axis of the texture
     // Vertices             Colors
     // 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left, RED
     //-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right, GREEN
@@ -69,7 +74,7 @@ float vertices[] = {
     // clang-format on
 };
 
-unsigned int indices[] = {0, 1, 3, 1, 2, 3};
+GLuint indices[] = {0, 1, 3, 1, 2, 3};
 
 int main(int argc, char *args[]) {
 
@@ -102,22 +107,11 @@ int main(int argc, char *args[]) {
   Shader shader("src/res/shaders/vertx_shader.vs",
                 "src/res/shaders/frag_shader.fs");
 
-  unsigned int VBO, VAO, EBO;
-  // Generate the buffer. Takes the number of buffers and the buffer.
-  // Vertex
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  // Check for errors.
-  debugGL.CheckOpenGLError("ERROR: Could not create VAO and VBO", __FILE__,
-                           __LINE__);
+  VAO VAO;
+  VAO.Bind();
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_STATIC_DRAW);
+  VBO VBO(vertices, sizeof(vertices));
+  EBO EBO(indices, sizeof(indices));
 
   int w, h, nrChannels;
   // FLip the texture vertically.
@@ -279,14 +273,12 @@ int main(int argc, char *args[]) {
   int YPos_wh = 1;
 
   while (gameRunning) {
-    // The loop goes as following:
-    // 6. Clear and swap the buffer.
-    // 2. Clear the render.
-    // 3. Get the delta time.
-    // 4. Render
-    // 5. Update the render with a new frame.
-    // 1. Poll the events.
-    // repeat.
+
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+    vec = trans * vec;
+    std::cout << vec.x << vec.y << vec.z << std::endl;
 
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL2_ProcessEvent(&event);
@@ -515,7 +507,7 @@ int main(int argc, char *args[]) {
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
-    glBindVertexArray(VAO);
+    VAO.Bind();
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }

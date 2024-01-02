@@ -1,4 +1,4 @@
-#include "shader.hpp"
+#include "vertx/shader.hpp"
 
 #include <glad/glad.h>
 
