@@ -12,6 +12,8 @@ public: // Public values, exposable and usable by functions outside of the class
   void setBool(const std::string &name, bool value) const;
   void setInt(const std::string &name, int value) const;
   void setFloat(const std::string &name, float value) const;
+  // ID of the shader program
+  unsigned int ID;
 };
 
 // #ifndef SHADER_HPP can also be used to prevent the header from being included

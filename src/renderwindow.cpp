@@ -1,3 +1,4 @@
+#include "SDL_video.h"
 #include "glad/glad.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -34,24 +35,44 @@ RenderWindow::RenderWindow(const char *p_title, int p_w, int p_h)
   //  std::cerr << "Failed to set debug flag: " << SDL_GetError() << std::endl;
   //  check = false;
   //}
-  if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3) != 0) {
-    std::cerr << "Failed to set major version: " << SDL_GetError() << std::endl;
-    check = false;
-  }
-  if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2) != 0) {
-    std::cerr << "Failed to set minor version: " << SDL_GetError() << std::endl;
-    check = false;
-  }
-  if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) != 0) {
-    std::cerr << "Failed to set double buffer: " << SDL_GetError() << std::endl;
-    check = false;
-  }
-  // Force use of core profile.
-  if (SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                          SDL_GL_CONTEXT_PROFILE_CORE) != 0) {
-    std::cerr << "Failed to set core profile: " << SDL_GetError() << std::endl;
-    check = false;
-  }
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+  // Get the attribute to confirm.
+
+  int check2;
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &check2);
+  check2 == 1
+      ? std::cout << "SDL_GL_CONTEXT_PROFILE_MASK: Set properly, value: "
+                  << check2 << std::endl
+      : std::cerr << "SDL_GL_CONTEXT_PROFILE_MASK: Incorrect. \n"
+                  << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &check2);
+  check2 == 3
+      ? std::cout << "SDL_GL_CONTEXT_MAJOR_VERSION: Set properly, value: "
+                  << check2 << std::endl
+      : std::cerr << "SDL_GL_CONTEXT_MAJOR_VERSION: Incorrect. \n"
+                  << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &check2);
+  check2 == 2
+      ? std::cout << "SDL_GL_CONTEXT_MINOR_VERSION: Set properly, value: "
+                  << check2 << std::endl
+      : std::cerr << "SDL_GL_CONTEXT_MINOR_VERSION: Incorrect. \n"
+                  << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  SDL_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL, &check2);
+  check2 == 1 ? std::cout << "SDL_GL_ACCELERATED_VISUAL: Set properly, value: "
+                          << check2 << std::endl
+              : std::cerr << "SDL_GL_ACCELERATED_VISUAL: Incorrect. \n"
+                          << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &check2);
+  check2 == 1 ? std::cout << "SDL_GL_DOUBLEBUFFER: Set properly, value: "
+                          << check2 << std::endl
+              : std::cerr << "SDL_GL_DOUBLEBUFFER: Incorrect. \n"
+                          << check2 << std::endl;
 
   // Create a window using the given parameters.
   window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED,

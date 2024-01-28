@@ -107,10 +107,14 @@ int main(int argc, char *args[]) {
   Shader shader("src/res/shaders/vertx_shader.vs",
                 "src/res/shaders/frag_shader.fs");
 
+  // Generate VAO.
   VAO VAO;
+  // Bind the VAO.
   VAO.Bind();
 
+  // Generate the VBO, with the size and the vertices to the GPU.
   VBO VBO(vertices, sizeof(vertices));
+  // Generate the EBO, with the size and the indices to the GPU. (too.)
   EBO EBO(indices, sizeof(indices));
 
   int w, h, nrChannels;
@@ -273,13 +277,6 @@ int main(int argc, char *args[]) {
   int YPos_wh = 1;
 
   while (gameRunning) {
-
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-    vec = trans * vec;
-    std::cout << vec.x << vec.y << vec.z << std::endl;
-
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL2_ProcessEvent(&event);
       // Poll the close event
@@ -417,7 +414,13 @@ int main(int argc, char *args[]) {
     ImGui::Begin("FPS");
     ImGui::Text("FPS: %f", fps);
     ImGui::Text("Delta time: %f", deltaTime);
+    ImGui::Text("Last ticks: %d", lastTicks);
+    ImGui::Text("Now ticks: %d", nowTicks);
     ImGui::Text("Time running: %d seconds.", SDL_GetTicks() / 1000);
+    ImGui::End();
+    // Audio playback state window
+    ImGui::Begin("Audio playback state");
+    ImGui::Text("Music playback state: %s", Mus == 0 ? "Playing" : "Paused");
     ImGui::End();
     // Window resolution window
     ImGui::Begin("Window resolution");
@@ -466,6 +469,7 @@ int main(int argc, char *args[]) {
     // window.ImGuiRenderFinish();
 
     // Yeah yeah i know this is OpenGL again but deal with it B)
+
     // Run wireframe mode if checked.
     if (wireframe) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -507,6 +511,25 @@ int main(int argc, char *args[]) {
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
+
+    // glm translation, rotation, and scale loop
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+
+    trans =
+        glm::translate(trans, glm::vec3(sin((float)lastTicks / 1000.0f),
+                                        sin((float)lastTicks / 1000.0f), 0.0f));
+
+    trans = glm::rotate(trans, ((float)nowTicks) / 1000.0f,
+                        glm::vec3(0.0f, 0.0f, 1.0f)); // 120 fps is a no-no.
+    trans = glm::scale(trans, glm::vec3(sin((float)lastTicks / 1000.0f),
+                                        cos((float)lastTicks / 1000.0f), 0.5f));
+    vec = trans * vec;
+    std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
+              << std::endl;
+
+    GLuint transfLoc = glGetUniformLocation(shader.ID, "transform");
+    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(trans));
     VAO.Bind();
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
@@ -526,6 +549,24 @@ int main(int argc, char *args[]) {
     if (glGetError() > 0) {
       std::cerr << glGetError() << std::endl;
     }
+    // glm translation, rotation, and scale loop 2
+    trans = glm::mat4(1.0f);
+
+    trans =
+        glm::translate(trans, glm::vec3(-cos((float)lastTicks / 1000.0f),
+                                        cos((float)lastTicks / 1000.0f), 0.0f));
+
+    trans = glm::rotate(trans, ((float)nowTicks) / 1000.0f,
+                        glm::vec3(0.0f, 0.0f, 1.0f)); // 120 fps is a no-no.
+    trans = glm::scale(trans, glm::vec3(cos((float)lastTicks / 1000.0f),
+                                        sin((float)lastTicks / 1000.0f), 0.5f));
+    vec = trans * vec;
+    std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
+              << std::endl;
+
+    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, &trans[0][0]);
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     // End OpenGL Code.
     // Render the faces (3)

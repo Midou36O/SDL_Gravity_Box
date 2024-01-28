@@ -2,7 +2,7 @@
 
 /*
  * VAO Constructor
- * \desc Generates a VAO and binds it
+ * \desc Generates a VAO.
  */
 VAO::VAO() { glGenVertexArrays(1, &this->ID); }
 
