@@ -6,6 +6,7 @@
  *
  */
 
+#include "SDL_mouse.h"
 #include "glad/glad.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -17,8 +18,10 @@
 #include <stdio.h>
 // #include <string>
 
+#include "camera.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/geometric.hpp"
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
 #include "utils.hpp"
@@ -49,6 +52,12 @@
 
 int SCREEN_WIDTH = DEFAULT_SCREEN_WIDTH;
 int SCREEN_HEIGHT = DEFAULT_SCREEN_HEIGHT;
+
+// camera
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = SCREEN_WIDTH / 2.0f;
+float lastY = SCREEN_HEIGHT / 2.0f;
+bool firstMouse = true;
 
 // Setup the delta time.
 Uint32 lastTicks = SDL_GetTicks64();
@@ -341,7 +350,9 @@ int main(int argc, char *args[]) {
     float y = 0.0f;
     float z = 0.0f;
   };
-  view_pos view_pos;
+  view_pos view_pos1;
+  view_pos1 = {0.0f, 0.0f, 3.0f};
+
   struct rot_pos {
     float x = 0.01f;
     float y = 0.01f;
@@ -355,8 +366,37 @@ int main(int argc, char *args[]) {
 
   // Scale of the entity. Y axis.
   int YPos_wh = 1;
+  struct mouse_pos {
+    int x = SCREEN_WIDTH / 2;
+    int y = SCREEN_HEIGHT / 2;
+  };
+  mouse_pos mousepos;
+  int lastX = mousepos.x;
+  int lastY = mousepos.y;
+
+  float speed = 0.1f;
 
   while (gameRunning) {
+
+    // Get the delta time.
+    Uint32 nowTicks = SDL_GetTicks64();
+
+    // Dt in seconds
+    float deltaTime = (nowTicks - lastTicks) * 0.001f;
+
+    lastTicks = nowTicks;
+    // FPS to be displayed.
+    float fps = 1.0f / deltaTime;
+
+    float timeValue = (float)SDL_GetTicks64() / 100;
+    // No idea if that will work, but we're supposed to
+    // get the time in milliseconds to seconds.
+    double greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+    // sinus function is there since we're using cmath don't worry.
+    // Get the time value in seconds, divide it by 2, and add, 0.5f.
+    // The sinus function we made essentially avoids going to negative
+    // values.
+
     while (SDL_PollEvent(&event)) {
       ImGui_ImplSDL2_ProcessEvent(&event);
       // Poll the close event
@@ -366,18 +406,22 @@ int main(int argc, char *args[]) {
         gameRunning = false;
       }
       // User presses a key
-      else if (event.type == SDL_KEYUP) {
+      else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
         case SDLK_z:
+          camera.ProcessKeyboard(FORWARD, deltaTime);
           break;
 
         case SDLK_s:
+          camera.ProcessKeyboard(BACKWARD, deltaTime);
           break;
 
         case SDLK_q:
+          camera.ProcessKeyboard(RIGHT, deltaTime);
           break;
 
         case SDLK_d:
+          camera.ProcessKeyboard(LEFT, deltaTime);
           break;
 
         case SDLK_r:
@@ -416,6 +460,7 @@ int main(int argc, char *args[]) {
         default:
           break;
         }
+
       }
 
       // Get the mouse position on the window.
@@ -430,6 +475,7 @@ int main(int argc, char *args[]) {
           }
         }
       }
+      SDL_GetMouseState(&mousepos.x, &mousepos.y);
 
       // if (20 > (SDL_GetTicks() - lastTicks)) {
       //   SDL_Delay(20 - (SDL_GetTicks() -
@@ -440,24 +486,10 @@ int main(int argc, char *args[]) {
     // FIXME: It's flickering!
     // window.swap();
 
-    // Get the delta time.
-    Uint32 nowTicks = SDL_GetTicks64();
-
-    // Dt in seconds
-    float deltaTime = (nowTicks - lastTicks) * 0.001f;
-
-    lastTicks = nowTicks;
-    // FPS to be displayed.
-    float fps = 1.0f / deltaTime;
-
-    float timeValue = (float)SDL_GetTicks64() / 100;
-    // No idea if that will work, but we're supposed to
-    // get the time in milliseconds to seconds.
-    double greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-    // sinus function is there since we're using cmath don't worry.
-    // Get the time value in seconds, divide it by 2, and add, 0.5f.
-    // The sinus function we made essentially avoids going to negative
-    // values.
+    float xoffset = mousepos.x - lastX;
+    float yoffset = lastY - mousepos.y;
+    lastX = mousepos.x;
+    lastY = mousepos.y;
 
     // Update window width and height.
     window.getWindowSize(&SCREEN_WIDTH, &SCREEN_HEIGHT);
@@ -505,6 +537,8 @@ int main(int argc, char *args[]) {
     // Window resolution window
     ImGui::Begin("Window resolution");
     ImGui::Text("Window resolution is %d, %d", SCREEN_WIDTH, SCREEN_HEIGHT);
+    ImGui::Text("Mouse position is %d, %d", mousepos.x, mousepos.y);
+    ImGui::Text("The offset is %.2f, %.2f", xoffset, yoffset);
     ImGui::End();
     // Triangle pos window
     ImGui::Begin("Triangle position And Color");
@@ -589,22 +623,26 @@ int main(int argc, char *args[]) {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    // The camera positions were made using the Gram-Schmidt process.
+    // See more info here :
+    // https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
+
     model = glm::rotate(
         model, (float)SDL_GetTicks() / 1000 * glm::radians(55.0f),
         glm::vec3(cos((float)SDL_GetTicks() / 1000),
                   sin((float)SDL_GetTicks() / 1000),
                   0.0f)); // Rotate it 55 degrees behind. World space.
-    view = glm::translate(view, glm::vec3(view_pos.x, view_pos.y,
-                                          view_pos.z)); // Translate it down
-                                                        // a bit so it's at
-                                                        // the center of
-                                                        // the scene
-    view = glm::rotate(view, glm::radians(rot_pos.t),
-                       glm::vec3(rot_pos.x, rot_pos.y, rot_pos.z));
-    ImGui::Begin("FOV");
-    ImGui::SliderFloat3("Positions", &view_pos.x, -20.0f, 20.0f);
-    ImGui::SliderFloat4("Rotations", &rot_pos.x, -20.0f, 20.0f);
-    ImGui::End();
+    //
+    // Some fun with tronometry.
+    // Since we got the lookAt view property looking for the camera position,
+    // we can use the camera position to move the camera. And also rotate it.
+    // view = glm::lookAt(cameraPos, cameraPos + camRevDir, camUp);
+    // We'll get the radius of a circle. and rotate it according to the time and
+    // cosine.
+    camera.ProcessMouseMovement(xoffset, yoffset);
+    // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    view = camera.GetViewMatrix();
+
     projection = glm::perspective(
         glm::radians(-fov), (float)((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT),
         0.1f,
@@ -614,7 +652,9 @@ int main(int argc, char *args[]) {
 
     ImGui::Begin("FOV");
     ImGui::SliderFloat("FOV", &fov, 0.0f, 140.0f);
+    ImGui::SliderFloat("speed", &speed, 0.0f, 140.0f);
     ImGui::End();
+    camera.SetSpeed(speed);
 
     vec = model * view * projection * vec;
     std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
