@@ -343,9 +343,9 @@ int main(int argc, char *args[]) {
   };
   view_pos view_pos;
   struct rot_pos {
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    float x = 0.01f;
+    float y = 0.01f;
+    float z = 0.01f;
     float t = 1.0f;
   };
   rot_pos rot_pos;
