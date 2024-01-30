@@ -17,6 +17,7 @@
 #include <stdio.h>
 // #include <string>
 
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "mplayer.hpp"
 #include "renderwindow.hpp"
@@ -54,27 +55,93 @@ Uint32 lastTicks = SDL_GetTicks64();
 // Allow the keystate to be saved.
 const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
-float vertices[] = {
-    // Since we're going to implement multiple colors now, we're going to have
-    // to separate the vertices:
-    //             VERTEX     COLOR  TEXTURE
-    // STRUCTURE: [X][Y][Z][R][G][B][S][T]...
-    //  S means the X axis of the texture.
-    //  T means the Y axis of the texture
-    // Vertices             Colors
-    // 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left, RED
-    //-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right, GREEN
-    // 0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top, BLUE
+// float vertices[] = {
+//     // Since we're going to implement multiple colors now, we're going to
+//     have
+//     // to separate the vertices:
+//     //             VERTEX     COLOR  TEXTURE
+//     // STRUCTURE: [X][Y][Z][R][G][B][S][T]...
+//     //  S means the X axis of the texture.
+//     //  T means the Y axis of the texture
+//     // Vertices             Colors
+//     // 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left, RED
+//     //-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right, GREEN
+//     // 0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f  // top, BLUE
+//
+// clang-format off
+//    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // left, RED, texture top right
+//    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // right, GREEN, bottom right 
+//   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // top, BLUE, bottom left 
+//   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top, YELLOW, top left
+// clang-format on
+//};
 
-    // clang-format off
-    0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // left, RED, texture top right
-    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // right, GREEN, bottom right 
-   -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // top, BLUE, bottom left 
-   -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top, YELLOW, top left
-    // clang-format on
+// GLuint indices[] = {0, 1, 3, 1, 2, 3};
+
+float fov = 60.0f;
+// This time we got a box. Each face has point coordinates and texture. Keep
+// this in mind! (remove the color property.) So we got 6 faces, 4 points each,
+// 3 coordinates each, 2 texture coordinates each. 6 * 4 * 3 + 6 * 4 * 2 = 144
+//            VERTEX   TEXTURE
+// STRUCTURE: [X][Y][Z][S][T]...
+// clang-format off
+ float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+glm::vec3 cubePositions[] = {
+  glm::vec3( 0.0f, 0.0f,0.0f),
+  glm::vec3( 2.0f, 5.0f, -15.0f),
+  glm::vec3(-1.5f, -2.2f, -2.5f),
+  glm::vec3(-3.8f, -2.0f, -12.3f),
+  glm::vec3( 2.4f, -0.4f, -3.5f),
+  glm::vec3(-1.7f, 3.0f, -7.5f),
+  glm::vec3( 1.3f, -2.0f, -2.5f),
+  glm::vec3( 1.5f, 2.0f, -2.5f),
+  glm::vec3( 1.5f, 0.2f, -1.5f),
+  glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
-GLuint indices[] = {0, 1, 3, 1, 2, 3};
+// clang-format on
 
 int main(int argc, char *args[]) {
 
@@ -99,7 +166,6 @@ int main(int argc, char *args[]) {
   DebugGL debugGL;
 
   window.GLInit();
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
   // Imgui init
   window.ImGuiInit();
@@ -115,7 +181,7 @@ int main(int argc, char *args[]) {
   // Generate the VBO, with the size and the vertices to the GPU.
   VBO VBO(vertices, sizeof(vertices));
   // Generate the EBO, with the size and the indices to the GPU. (too.)
-  EBO EBO(indices, sizeof(indices));
+  // EBO EBO(indices, sizeof(indices));
 
   int w, h, nrChannels;
   // FLip the texture vertically.
@@ -269,6 +335,20 @@ int main(int argc, char *args[]) {
   };
   gl_color gl_color = {0.0f, 0.0f, 0.0f};
   // What a mess.
+  //
+  struct view_pos {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+  };
+  view_pos view_pos;
+  struct rot_pos {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    float t = 1.0f;
+  };
+  rot_pos rot_pos;
 
   bool fs;
   bool wireframe = false;
@@ -433,18 +513,18 @@ int main(int argc, char *args[]) {
     // Goddammit this is wrong!
     // Reminder : [X][Y][Z][R][G][B][S][T]
     // So 3 + 3 + 2 = 8 = > 8 - 1 = 7 is max normally. But 8 is for the offsets.
-    ImGui::ColorEdit3("square color1", &vertices[3]);
-    ImGui::ColorEdit3("square color2", &vertices[8 + 3]);
-    ImGui::ColorEdit3("square color3", &vertices[8 * 2 + 3]);
-    ImGui::ColorEdit3("square color4", &vertices[8 * 3 + 3]);
+    // ImGui::ColorEdit3("square color1", &vertices[3]);
+    // ImGui::ColorEdit3("square color2", &vertices[8 + 3]);
+    // ImGui::ColorEdit3("square color3", &vertices[8 * 2 + 3]);
+    // ImGui::ColorEdit3("square color4", &vertices[8 * 3 + 3]);
     ImGui::SliderFloat3("Position1", &vertices[0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position2", &vertices[8 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position3", &vertices[8 * 2 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position4", &vertices[8 * 3 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat2("Texture1", &vertices[6], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture2", &vertices[8 + 6], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture3", &vertices[8 * 2 + 6], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture4", &vertices[8 * 3 + 6], -2.0f, 2.0f);
+    ImGui::SliderFloat3("Position2", &vertices[5 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat3("Position3", &vertices[5 * 2 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat3("Position4", &vertices[5 * 3 + 0], -1.0f, 1.0f);
+    ImGui::SliderFloat2("Texture1", &vertices[4], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture2", &vertices[5 + 4], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture3", &vertices[5 * 2 + 4], -2.0f, 2.0f);
+    ImGui::SliderFloat2("Texture4", &vertices[5 * 3 + 4], -2.0f, 2.0f);
     // Wireframe mode
     ImGui::Checkbox("Wireframe mode", &wireframe);
     ImGui::End();
@@ -464,7 +544,6 @@ int main(int argc, char *args[]) {
     ImGui::Text("OpenGL Shading Language Version: %s",
                 glGetString(GL_SHADING_LANGUAGE_VERSION));
     ImGui::End();
-    ImGui::Render();
 
     // window.ImGuiRenderFinish();
 
@@ -480,16 +559,15 @@ int main(int argc, char *args[]) {
     // TODO: Explain this better!
     // Color
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                           (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                          (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+    //                       (void *)(6 * sizeof(float)));
+    // glEnableVertexAttribArray(2);
 
     // glViewport(0 + DEFAULT_SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 2,
     // SCREEN_HEIGHT); glViewport(0, 0, DEFAULT_SCREEN_WIDTH * 2, SCREEN_HEIGHT
@@ -497,82 +575,100 @@ int main(int argc, char *args[]) {
     // glViewport(0, 0, DEFAULT_SCREEN_WIDTH, SCREEN_HEIGHT);
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
-    }
     // int vertexColorLoc = glGetUniformLocation(shdrPrg, "ourColor");
     // glUniform4f(vertexColorLoc, 0.0f, greenValue, 0.0f, 1.0f);
 
     glClearColor(gl_color.r, gl_color.g, gl_color.b, 1.0f);
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
-    }
-    glClear(GL_COLOR_BUFFER_BIT);
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
-    }
+    glEnable(GL_DEPTH_TEST);
+    debugGL.CheckOpenGLError("Enabled depth", __FILE__, __LINE__);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // glm translation, rotation, and scale loop
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
 
-    trans =
-        glm::translate(trans, glm::vec3(sin((float)lastTicks / 1000.0f),
-                                        sin((float)lastTicks / 1000.0f), 0.0f));
+    model = glm::rotate(
+        model, (float)SDL_GetTicks() / 1000 * glm::radians(55.0f),
+        glm::vec3(cos((float)SDL_GetTicks() / 1000),
+                  sin((float)SDL_GetTicks() / 1000),
+                  0.0f)); // Rotate it 55 degrees behind. World space.
+    view = glm::translate(view, glm::vec3(view_pos.x, view_pos.y,
+                                          view_pos.z)); // Translate it down
+                                                        // a bit so it's at
+                                                        // the center of
+                                                        // the scene
+    view = glm::rotate(view, glm::radians(rot_pos.t),
+                       glm::vec3(rot_pos.x, rot_pos.y, rot_pos.z));
+    ImGui::Begin("FOV");
+    ImGui::SliderFloat3("Positions", &view_pos.x, -20.0f, 20.0f);
+    ImGui::SliderFloat4("Rotations", &rot_pos.x, -20.0f, 20.0f);
+    ImGui::End();
+    projection = glm::perspective(
+        glm::radians(-fov), (float)((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT),
+        0.1f,
+        100.0f); // Set the perspective.
+                 // 45 degrees field of view, 16/9 ratio, 0.1f near,
+                 // 100.0f far. Should be good.
 
-    trans = glm::rotate(trans, ((float)nowTicks) / 1000.0f,
-                        glm::vec3(0.0f, 0.0f, 1.0f)); // 120 fps is a no-no.
-    trans = glm::scale(trans, glm::vec3(sin((float)lastTicks / 1000.0f),
-                                        cos((float)lastTicks / 1000.0f), 0.5f));
-    vec = trans * vec;
+    ImGui::Begin("FOV");
+    ImGui::SliderFloat("FOV", &fov, 0.0f, 140.0f);
+    ImGui::End();
+
+    vec = model * view * projection * vec;
     std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
               << std::endl;
 
-    GLuint transfLoc = glGetUniformLocation(shader.ID, "transform");
-    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    GLuint transfLoc = glGetUniformLocation(shader.ID, "model");
+    debugGL.CheckOpenGLError("Linking the shader ID to the model space.",
+                             __FILE__, __LINE__);
+    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(model));
+    debugGL.CheckOpenGLError("Applying the transformation", __FILE__, __LINE__);
+    transfLoc = glGetUniformLocation(shader.ID, "view");
+    debugGL.CheckOpenGLError("Linking the shader ID to the view space.",
+                             __FILE__, __LINE__);
+    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(view));
+    debugGL.CheckOpenGLError("Applying the transformation", __FILE__, __LINE__);
+    transfLoc = glGetUniformLocation(shader.ID, "projection");
+    debugGL.CheckOpenGLError("Linking the shader ID to the model space.",
+                             __FILE__, __LINE__);
+    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(projection));
     VAO.Bind();
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
-    }
+    debugGL.CheckOpenGLError("Binding the VAO.", __FILE__, __LINE__);
     glActiveTexture(GL_TEXTURE0); // Activate the texture unit first before
                                   // binding texture
+    debugGL.CheckOpenGLError("Activating the texture.", __FILE__, __LINE__);
     glBindTexture(GL_TEXTURE_2D, texture1);
+    debugGL.CheckOpenGLError("Binding the texture", __FILE__, __LINE__);
     glActiveTexture(GL_TEXTURE1); // Activate the texture unit first before
                                   // binding texture
     glBindTexture(GL_TEXTURE_2D, texture2);
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
-    }
+    debugGL.CheckOpenGLError("Binding the texture", __FILE__, __LINE__);
+
     shader.use();
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    if (glGetError() > 0) {
-      std::cerr << glGetError() << std::endl;
+    for (uint i = 0; i < 10; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, cubePositions[i]);
+      float angle = 20.0f * i + 1.0f;
+      model =
+          glm::rotate(model, (float)SDL_GetTicks() / 1000 * glm::radians(angle),
+                      glm::vec3(cos((float)SDL_GetTicks() / 1000),
+                                sin((float)SDL_GetTicks() / 1000),
+                                -cos((float)SDL_GetTicks() / 1000)));
+      shader.setMat4("model", model);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
     }
-    // glm translation, rotation, and scale loop 2
-    trans = glm::mat4(1.0f);
-
-    trans =
-        glm::translate(trans, glm::vec3(-cos((float)lastTicks / 1000.0f),
-                                        cos((float)lastTicks / 1000.0f), 0.0f));
-
-    trans = glm::rotate(trans, ((float)nowTicks) / 1000.0f,
-                        glm::vec3(0.0f, 0.0f, 1.0f)); // 120 fps is a no-no.
-    trans = glm::scale(trans, glm::vec3(cos((float)lastTicks / 1000.0f),
-                                        sin((float)lastTicks / 1000.0f), 0.5f));
-    vec = trans * vec;
-    std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
-              << std::endl;
-
-    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, &trans[0][0]);
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    debugGL.CheckOpenGLError("Drawing the arrays", __FILE__, __LINE__);
     // End OpenGL Code.
     // Render the faces (3)
     // for (Entity &face : entities) {
     //  window.render(face, XPos_mo_sta, YPos_mo_sta);
     //};
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     // Update the render with a new frame.
     // window.display();
@@ -589,6 +685,9 @@ int main(int argc, char *args[]) {
   music.freeMusic();
   // Allow the music player to close properly too.
   SDL_Delay(3);
+  // Free the VBO and VAO.
+  VAO.Delete();
+  VBO.Delete();
   // Destroy the window.
   window.cleanUp();
   // Destroy imgui.

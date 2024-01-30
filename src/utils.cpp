@@ -5,10 +5,13 @@
 
 void DebugGL::CheckOpenGLError(const char *stmt, const char *fname, int line) {
   GLenum err = glGetError();
+  // Describe the error.
+  // Replace codes with the proper error messages.
+
   if (err != GL_NO_ERROR) {
-    std::cerr << "OpenGL error" << err << " , at " << fname << " : " << line
+    std::cerr << "OpenGL error " << err << ", at " << fname << ":" << line
               << " - for " << stmt << std::endl;
-    abort();
+    DebugGL::GLClearError();
   }
 }
 
