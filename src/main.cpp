@@ -91,52 +91,52 @@ float fov = 60.0f;
 // This time we got a box. Each face has point coordinates and texture. Keep
 // this in mind! (remove the color property.) So we got 6 faces, 4 points each,
 // 3 coordinates each, 2 texture coordinates each. 6 * 4 * 3 + 6 * 4 * 2 = 144
-//            VERTEX   TEXTURE
-// STRUCTURE: [X][Y][Z][S][T]...
+//            VERTEX   NORMAL
+// STRUCTURE: [X][Y][Z][X][Y][Z]...
 // clang-format off
- float vertices[] = {
-        -0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
+float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
 
-        -0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f, -0.5f,  0.5f, 
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f, -0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-         0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-        -0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f, -0.5f, 
-         0.5f, -0.5f,  0.5f, 
-         0.5f, -0.5f,  0.5f, 
-        -0.5f, -0.5f,  0.5f, 
-        -0.5f, -0.5f, -0.5f, 
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-        -0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f,  0.5f, 
-         0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f,  0.5f, 
-        -0.5f,  0.5f, -0.5f 
-    };
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
 glm::vec3 cubePositions[] = {
   glm::vec3( 0.0f, 0.0f,0.0f),
   glm::vec3( 2.0f, 5.0f, -15.0f),
@@ -190,12 +190,15 @@ int main(int argc, char *args[]) {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   cubeVAO.Bind();
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
   VAO lightcubeVAO;
   lightcubeVAO.Bind();
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
   VBO.Bind();
 
@@ -269,6 +272,8 @@ int main(int argc, char *args[]) {
   };
   view_pos view_pos1;
   view_pos1 = {0.0f, 0.0f, 3.0f};
+  view_pos light_pos;
+  light_pos = {1.2f, 1.0f, 2.0f};
 
   bool fs;
   bool wireframe = false;
@@ -282,6 +287,7 @@ int main(int argc, char *args[]) {
   mouse_pos mousepos;
   int lastX = mousepos.x;
   int lastY = mousepos.y;
+  bool mmov = true;
 
   float speed = 0.1f;
 
@@ -462,16 +468,11 @@ int main(int argc, char *args[]) {
     // ImGui::ColorEdit3("square color2", &vertices[8 + 3]);
     // ImGui::ColorEdit3("square color3", &vertices[8 * 2 + 3]);
     // ImGui::ColorEdit3("square color4", &vertices[8 * 3 + 3]);
-    ImGui::SliderFloat3("Position1", &vertices[0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position2", &vertices[5 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position3", &vertices[5 * 2 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat3("Position4", &vertices[5 * 3 + 0], -1.0f, 1.0f);
-    ImGui::SliderFloat2("Texture1", &vertices[4], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture2", &vertices[5 + 4], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture3", &vertices[5 * 2 + 4], -2.0f, 2.0f);
-    ImGui::SliderFloat2("Texture4", &vertices[5 * 3 + 4], -2.0f, 2.0f);
+    ImGui::SliderFloat3("Light Position", &light_pos.x, -5.0f, 5.0f);
     // Wireframe mode
     ImGui::Checkbox("Wireframe mode", &wireframe);
+    // Mouse enable
+    ImGui::Checkbox("Mouse enable", &mmov);
     ImGui::End();
     // OpenGL background color window
     ImGui::Begin("OpenGL background color");
@@ -522,15 +523,23 @@ int main(int argc, char *args[]) {
     debugGL.CheckOpenGLError("Enabled depth", __FILE__, __LINE__);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glm::vec3 lightPos(light_pos.x, light_pos.y, light_pos.z);
     lightningShader.use();
     lightningShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
     lightningShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+    lightningShader.setVec3(
+        "lightPos",
+        lightPos); // To compensate not having a lightPos variable here.
     // glm translation, rotation, and scale loop
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    if (mmov) {
+      camera.ProcessMouseMovement(xoffset, yoffset);
+    } else {
+      camera.ProcessMouseMovement(0, 0);
+    }
     // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     view = camera.GetViewMatrix();
 
@@ -557,7 +566,6 @@ int main(int argc, char *args[]) {
     lightCubeShader.use();
     lightCubeShader.setMat4("projection", projection);
     lightCubeShader.setMat4("view", view);
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
     model = glm::mat4(1.0f); // Reset the model matrix.
     model = glm::translate(model, lightPos);
     model = glm::scale(model, glm::vec3(0.2f)); // Scale it down to 20%.
