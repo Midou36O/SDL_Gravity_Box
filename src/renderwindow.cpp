@@ -37,6 +37,7 @@ RenderWindow::RenderWindow(const char *p_title, int p_w, int p_h)
   //}
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_SetHint("SDL_HINT_MOUSE_RELATIVE_WARP_MOTION", "1");
 
   // Get the attribute to confirm.
 
@@ -224,6 +225,9 @@ void RenderWindow::display() { SDL_RenderPresent(renderer); }
 
 // Swap the buffers.
 void RenderWindow::swap() { SDL_GL_SwapWindow(window); }
+
+void RenderWindow::grabmouse() { SDL_SetRelativeMouseMode(SDL_TRUE); }
+void RenderWindow::releasemouse() { SDL_SetRelativeMouseMode(SDL_FALSE); }
 
 // Imgui init
 void RenderWindow::ImGuiInit() {

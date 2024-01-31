@@ -55,7 +55,9 @@ Shader::Shader(const char *vrtxPath, const char *frgmntPath) {
   if (!success) {
     glGetShaderInfoLog(vrtx, 512, NULL, infoLog);
     std::cerr << "Error! Vertex shader compilation failed!\n"
-              << infoLog << std::endl;
+              << infoLog << "\n"
+              << "[VRTX] filename: " << vrtxPath << "\n"
+              << std::endl;
   }
   // Fragment Shader
   frgmnt = glCreateShader(GL_FRAGMENT_SHADER);
@@ -65,7 +67,9 @@ Shader::Shader(const char *vrtxPath, const char *frgmntPath) {
   if (!success) {
     glGetShaderInfoLog(frgmnt, 512, NULL, infoLog);
     std::cerr << "Error! Fragment shader compilation failed!\n"
-              << infoLog << std::endl;
+              << infoLog << "\n"
+              << "[FRAG] filename: " << frgmntPath << "\n"
+              << std::endl;
   }
   // Shader Program
   // Right! I forgot that IDs are crucial for OpenGL. I'll have to remember that
@@ -77,7 +81,10 @@ Shader::Shader(const char *vrtxPath, const char *frgmntPath) {
   if (!success) {
     glGetProgramInfoLog(ID, 512, NULL, infoLog);
     std::cerr << "Error! Shader program linking failed!\n"
-              << infoLog << std::endl;
+              << infoLog << "\n"
+              << "[FRAG] filename: " << frgmntPath << "\n"
+              << "[VRTX] filename: " << vrtxPath << "\n"
+              << std::endl;
   }
   // Time to yeet the shaders
   glDeleteShader(vrtx);

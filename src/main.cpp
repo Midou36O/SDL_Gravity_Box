@@ -95,59 +95,51 @@ float fov = 60.0f;
 // STRUCTURE: [X][Y][Z][S][T]...
 // clang-format off
  float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 
+         0.5f, -0.5f, -0.5f, 
+         0.5f,  0.5f, -0.5f, 
+         0.5f,  0.5f, -0.5f, 
+        -0.5f,  0.5f, -0.5f, 
+        -0.5f, -0.5f, -0.5f, 
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, 
+         0.5f, -0.5f,  0.5f, 
+         0.5f,  0.5f,  0.5f, 
+         0.5f,  0.5f,  0.5f, 
+        -0.5f,  0.5f,  0.5f, 
+        -0.5f, -0.5f,  0.5f, 
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, 
+        -0.5f,  0.5f, -0.5f, 
+        -0.5f, -0.5f, -0.5f, 
+        -0.5f, -0.5f, -0.5f, 
+        -0.5f, -0.5f,  0.5f, 
+        -0.5f,  0.5f,  0.5f, 
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f, 
+         0.5f,  0.5f, -0.5f, 
+         0.5f, -0.5f, -0.5f, 
+         0.5f, -0.5f, -0.5f, 
+         0.5f, -0.5f,  0.5f, 
+         0.5f,  0.5f,  0.5f, 
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 
+         0.5f, -0.5f, -0.5f, 
+         0.5f, -0.5f,  0.5f, 
+         0.5f, -0.5f,  0.5f, 
+        -0.5f, -0.5f,  0.5f, 
+        -0.5f, -0.5f, -0.5f, 
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -0.5f,  0.5f, -0.5f, 
+         0.5f,  0.5f, -0.5f, 
+         0.5f,  0.5f,  0.5f, 
+         0.5f,  0.5f,  0.5f, 
+        -0.5f,  0.5f,  0.5f, 
+        -0.5f,  0.5f, -0.5f 
     };
 glm::vec3 cubePositions[] = {
   glm::vec3( 0.0f, 0.0f,0.0f),
   glm::vec3( 2.0f, 5.0f, -15.0f),
-  glm::vec3(-1.5f, -2.2f, -2.5f),
-  glm::vec3(-3.8f, -2.0f, -12.3f),
-  glm::vec3( 2.4f, -0.4f, -3.5f),
-  glm::vec3(-1.7f, 3.0f, -7.5f),
-  glm::vec3( 1.3f, -2.0f, -2.5f),
-  glm::vec3( 1.5f, 2.0f, -2.5f),
-  glm::vec3( 1.5f, 0.2f, -1.5f),
-  glm::vec3(-1.3f, 1.0f, -1.5f)
 };
 
 // clang-format on
@@ -179,109 +171,33 @@ int main(int argc, char *args[]) {
   // Imgui init
   window.ImGuiInit();
 
-  Shader shader("src/res/shaders/vertx_shader.vs",
-                "src/res/shaders/frag_shader.fs");
+  Shader lightningShader("src/res/shaders/colors.vs",
+                         "src/res/shaders/colors.fs");
+  Shader lightCubeShader("src/res/shaders/light_cube.vs",
+                         "src/res/shaders/light_cube.fs");
 
   // Generate VAO.
-  VAO VAO;
+  VAO cubeVAO;
+
   // Bind the VAO.
-  VAO.Bind();
+  cubeVAO.Bind();
 
   // Generate the VBO, with the size and the vertices to the GPU.
   VBO VBO(vertices, sizeof(vertices));
   // Generate the EBO, with the size and the indices to the GPU. (too.)
   // EBO EBO(indices, sizeof(indices));
 
-  int w, h, nrChannels;
-  // FLip the texture vertically.
-  // This is because OpenGL looks for the coordinates from the bottom left, our
-  // textures are from the top left. So they get flipped.
-  stbi_set_flip_vertically_on_load(true);
-  unsigned char *data =
-      stbi_load("src/res/img/container.jpg", &w, &h, &nrChannels, 0);
-  unsigned int texture1, texture2;
-  glGenTextures(1, &texture1);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
-                              // basic wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
-                              // basic wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR); // Set texture filtering (interpolation) options
-                              // on the currently bound texture object
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // Apparently forgetting this line causes the texture to be black.
-  glBindTexture(GL_TEXTURE_2D, texture1);
+  cubeVAO.Bind();
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);
 
-  // Set the texture wrapping/filtering options (on the currently bound texture
-  // object)
-  // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-
-  if (data) {
-    /*
-     * \param GL_TEXTURE_2D The texture target.
-     * \param 0 The mipmap level.
-     * \param GL_RGB The internal format of the texture.
-     * \param w The width of the texture.
-     * \param h The height of the texture.
-     * \param 0 The border of the texture. (legacy, should always be 0
-     * apparently.)
-     * \param GL_RGB The format of the pixel data.
-     * \param GL_UNSIGNED_BYTE The type of the pixel data.
-     * \param data The pixel data.
-     */
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
-                 data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-  } else {
-    std::cerr << "Failed to load texture! ERROR: " << stbi_failure_reason()
-              << std::endl;
-  }
-  stbi_image_free(data);
-
-  glGenTextures(1, &texture2);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
-                              // basic wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                  GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually
-                              // basic wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR); // Set texture filtering (interpolation) options
-                              // on the currently bound texture object
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // Same thing here, forgetting this line causes the texture to be black.
-  glBindTexture(GL_TEXTURE_2D, texture2);
-
-  // Load the 2nd texture.
-  data = stbi_load("src/res/img/pop.png", &w, &h, &nrChannels, 0);
-  if (data) {
-    /*
-     * \param GL_TEXTURE_2D The texture target.
-     * \param 0 The mipmap level.
-     * \param GL_RGBA The internal format of the texture.
-     * \param w The width of the texture.
-     * \param h The height of the texture.
-     * \param 0 The border of the texture. (legacy, should always be 0
-     * apparently.)
-     * \param GL_RGBA The format of the pixel data.
-     * \param GL_UNSIGNED_BYTE The type of the pixel data.
-     * \param data The pixel data.
-     */
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-  } else {
-    std::cerr << "Failed to load texture! ERROR: " << stbi_failure_reason()
-              << std::endl;
-  }
-  stbi_image_free(data);
-  shader.use();
-  shader.setInt("texture2", 1);
+  VAO lightcubeVAO;
+  lightcubeVAO.Bind();
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);
+  VBO.Bind();
 
   /*
    * The vertex attribute interprets the vertex data (per vertex attribute.)
@@ -310,6 +226,7 @@ int main(int argc, char *args[]) {
 
   Mix_Music *musicPlayer = Mix_LoadMUS("src/res/bgm/bgm.ogg");
   Mix_PlayMusic(musicPlayer, -1);
+  Mix_PauseMusic();
 
   if (musicPlayer == NULL) {
     std::cerr << "Failed to load music! ERROR: " << Mix_GetError() << std::endl;
@@ -334,7 +251,7 @@ int main(int argc, char *args[]) {
   // Create a dummy SDL_Event to poll the events.
   SDL_Event event;
 
-  int Mus = 0;
+  int Mus = 1;
 
   // OpenGL background color.
   struct gl_color {
@@ -342,7 +259,7 @@ int main(int argc, char *args[]) {
     float g;
     float b;
   };
-  gl_color gl_color = {0.0f, 0.0f, 0.0f};
+  gl_color gl_color = {0.4f, 0.5f, 0.6f};
   // What a mess.
   //
   struct view_pos {
@@ -352,14 +269,6 @@ int main(int argc, char *args[]) {
   };
   view_pos view_pos1;
   view_pos1 = {0.0f, 0.0f, 3.0f};
-
-  struct rot_pos {
-    float x = 0.01f;
-    float y = 0.01f;
-    float z = 0.01f;
-    float t = 1.0f;
-  };
-  rot_pos rot_pos;
 
   bool fs;
   bool wireframe = false;
@@ -449,9 +358,11 @@ int main(int argc, char *args[]) {
 
         case SDLK_SPACE:
           if (Mus == 1) {
+            window.grabmouse();
             Mix_ResumeMusic();
             Mus = 0;
           } else {
+            window.releasemouse();
             Mix_PauseMusic();
             Mus = 1;
           };
@@ -592,13 +503,7 @@ int main(int argc, char *args[]) {
     // Since we're now having 2 vertexes we need to delay the offset location.
     // TODO: Explain this better!
     // Color
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                          (void *)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                          (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+
     // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
     //                       (void *)(6 * sizeof(float)));
     // glEnableVertexAttribArray(2);
@@ -617,28 +522,14 @@ int main(int argc, char *args[]) {
     debugGL.CheckOpenGLError("Enabled depth", __FILE__, __LINE__);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    lightningShader.use();
+    lightningShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+    lightningShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
     // glm translation, rotation, and scale loop
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    // The camera positions were made using the Gram-Schmidt process.
-    // See more info here :
-    // https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
-
-    model = glm::rotate(
-        model, (float)SDL_GetTicks() / 1000 * glm::radians(55.0f),
-        glm::vec3(cos((float)SDL_GetTicks() / 1000),
-                  sin((float)SDL_GetTicks() / 1000),
-                  0.0f)); // Rotate it 55 degrees behind. World space.
-    //
-    // Some fun with tronometry.
-    // Since we got the lookAt view property looking for the camera position,
-    // we can use the camera position to move the camera. And also rotate it.
-    // view = glm::lookAt(cameraPos, cameraPos + camRevDir, camUp);
-    // We'll get the radius of a circle. and rotate it according to the time and
-    // cosine.
     camera.ProcessMouseMovement(xoffset, yoffset);
     // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     view = camera.GetViewMatrix();
@@ -650,57 +541,28 @@ int main(int argc, char *args[]) {
                  // 45 degrees field of view, 16/9 ratio, 0.1f near,
                  // 100.0f far. Should be good.
 
+    lightningShader.setMat4("projection", projection);
+    lightningShader.setMat4("view", view);
+    lightningShader.setMat4("model", model);
+
     ImGui::Begin("FOV");
     ImGui::SliderFloat("FOV", &fov, 0.0f, 140.0f);
     ImGui::SliderFloat("speed", &speed, 0.0f, 140.0f);
     ImGui::End();
     camera.SetSpeed(speed);
 
-    vec = model * view * projection * vec;
-    std::cout << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z
-              << std::endl;
+    cubeVAO.Bind();
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    GLuint transfLoc = glGetUniformLocation(shader.ID, "model");
-    debugGL.CheckOpenGLError("Linking the shader ID to the model space.",
-                             __FILE__, __LINE__);
-    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(model));
-    debugGL.CheckOpenGLError("Applying the transformation", __FILE__, __LINE__);
-    transfLoc = glGetUniformLocation(shader.ID, "view");
-    debugGL.CheckOpenGLError("Linking the shader ID to the view space.",
-                             __FILE__, __LINE__);
-    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(view));
-    debugGL.CheckOpenGLError("Applying the transformation", __FILE__, __LINE__);
-    transfLoc = glGetUniformLocation(shader.ID, "projection");
-    debugGL.CheckOpenGLError("Linking the shader ID to the model space.",
-                             __FILE__, __LINE__);
-    glUniformMatrix4fv(transfLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    VAO.Bind();
-    debugGL.CheckOpenGLError("Binding the VAO.", __FILE__, __LINE__);
-    glActiveTexture(GL_TEXTURE0); // Activate the texture unit first before
-                                  // binding texture
-    debugGL.CheckOpenGLError("Activating the texture.", __FILE__, __LINE__);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    debugGL.CheckOpenGLError("Binding the texture", __FILE__, __LINE__);
-    glActiveTexture(GL_TEXTURE1); // Activate the texture unit first before
-                                  // binding texture
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    debugGL.CheckOpenGLError("Binding the texture", __FILE__, __LINE__);
-
-    shader.use();
-    for (uint i = 0; i < 10; i++) {
-      glm::mat4 model = glm::mat4(1.0f);
-      model = glm::translate(model, cubePositions[i]);
-      float angle = 20.0f * i + 1.0f;
-      model =
-          glm::rotate(model, (float)SDL_GetTicks() / 1000 * glm::radians(angle),
-                      glm::vec3(cos((float)SDL_GetTicks() / 1000),
-                                sin((float)SDL_GetTicks() / 1000),
-                                -cos((float)SDL_GetTicks() / 1000)));
-      shader.setMat4("model", model);
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    lightCubeShader.use();
+    lightCubeShader.setMat4("projection", projection);
+    lightCubeShader.setMat4("view", view);
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    model = glm::mat4(1.0f); // Reset the model matrix.
+    model = glm::translate(model, lightPos);
+    model = glm::scale(model, glm::vec3(0.2f)); // Scale it down to 20%.
+    lightCubeShader.setMat4("model", model);
+    lightcubeVAO.Bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
     debugGL.CheckOpenGLError("Drawing the arrays", __FILE__, __LINE__);
     // End OpenGL Code.
@@ -726,7 +588,7 @@ int main(int argc, char *args[]) {
   // Allow the music player to close properly too.
   SDL_Delay(3);
   // Free the VBO and VAO.
-  VAO.Delete();
+  cubeVAO.Delete();
   VBO.Delete();
   // Destroy the window.
   window.cleanUp();

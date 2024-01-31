@@ -9,7 +9,8 @@ void DebugGL::CheckOpenGLError(const char *stmt, const char *fname, int line) {
   // Replace codes with the proper error messages.
 
   if (err != GL_NO_ERROR) {
-    std::cerr << "OpenGL error " << err << ", at " << fname << ":" << line
+    std::cerr << "OpenGL error " << err << ", at " << fname << ":"
+              << line - 1 // because the line is off by 1
               << " - for " << stmt << std::endl;
     DebugGL::GLClearError();
   }

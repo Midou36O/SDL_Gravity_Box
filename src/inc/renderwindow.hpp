@@ -31,6 +31,8 @@ public:
   void ImGuiRenderStart();
   void ImGuiRenderFinish();
   void ImGuiShutdown();
+  void grabmouse();
+  void releasemouse();
 
 private:
   /**
