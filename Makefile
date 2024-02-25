@@ -190,6 +190,126 @@ src/entity.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/entity.cpp.s
 .PHONY : src/entity.cpp.s
 
+src/inc/submodules/imgui/imgui.o: src/inc/submodules/imgui/imgui.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui.o
+
+# target to build an object file
+src/inc/submodules/imgui/imgui.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui.cpp.o
+
+src/inc/submodules/imgui/imgui.i: src/inc/submodules/imgui/imgui.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui.i
+
+# target to preprocess a source file
+src/inc/submodules/imgui/imgui.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui.cpp.i
+
+src/inc/submodules/imgui/imgui.s: src/inc/submodules/imgui/imgui.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui.s
+
+# target to generate assembly for a file
+src/inc/submodules/imgui/imgui.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui.cpp.s
+
+src/inc/submodules/imgui/imgui_demo.o: src/inc/submodules/imgui/imgui_demo.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_demo.o
+
+# target to build an object file
+src/inc/submodules/imgui/imgui_demo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_demo.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_demo.cpp.o
+
+src/inc/submodules/imgui/imgui_demo.i: src/inc/submodules/imgui/imgui_demo.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_demo.i
+
+# target to preprocess a source file
+src/inc/submodules/imgui/imgui_demo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_demo.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_demo.cpp.i
+
+src/inc/submodules/imgui/imgui_demo.s: src/inc/submodules/imgui/imgui_demo.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_demo.s
+
+# target to generate assembly for a file
+src/inc/submodules/imgui/imgui_demo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_demo.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_demo.cpp.s
+
+src/inc/submodules/imgui/imgui_draw.o: src/inc/submodules/imgui/imgui_draw.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_draw.o
+
+# target to build an object file
+src/inc/submodules/imgui/imgui_draw.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_draw.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_draw.cpp.o
+
+src/inc/submodules/imgui/imgui_draw.i: src/inc/submodules/imgui/imgui_draw.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_draw.i
+
+# target to preprocess a source file
+src/inc/submodules/imgui/imgui_draw.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_draw.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_draw.cpp.i
+
+src/inc/submodules/imgui/imgui_draw.s: src/inc/submodules/imgui/imgui_draw.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_draw.s
+
+# target to generate assembly for a file
+src/inc/submodules/imgui/imgui_draw.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_draw.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_draw.cpp.s
+
+src/inc/submodules/imgui/imgui_tables.o: src/inc/submodules/imgui/imgui_tables.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_tables.o
+
+# target to build an object file
+src/inc/submodules/imgui/imgui_tables.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_tables.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_tables.cpp.o
+
+src/inc/submodules/imgui/imgui_tables.i: src/inc/submodules/imgui/imgui_tables.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_tables.i
+
+# target to preprocess a source file
+src/inc/submodules/imgui/imgui_tables.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_tables.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_tables.cpp.i
+
+src/inc/submodules/imgui/imgui_tables.s: src/inc/submodules/imgui/imgui_tables.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_tables.s
+
+# target to generate assembly for a file
+src/inc/submodules/imgui/imgui_tables.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_tables.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_tables.cpp.s
+
+src/inc/submodules/imgui/imgui_widgets.o: src/inc/submodules/imgui/imgui_widgets.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_widgets.o
+
+# target to build an object file
+src/inc/submodules/imgui/imgui_widgets.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_widgets.cpp.o
+.PHONY : src/inc/submodules/imgui/imgui_widgets.cpp.o
+
+src/inc/submodules/imgui/imgui_widgets.i: src/inc/submodules/imgui/imgui_widgets.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_widgets.i
+
+# target to preprocess a source file
+src/inc/submodules/imgui/imgui_widgets.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_widgets.cpp.i
+.PHONY : src/inc/submodules/imgui/imgui_widgets.cpp.i
+
+src/inc/submodules/imgui/imgui_widgets.s: src/inc/submodules/imgui/imgui_widgets.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_widgets.s
+
+# target to generate assembly for a file
+src/inc/submodules/imgui/imgui_widgets.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDL_Gravity_Box.dir/build.make CMakeFiles/SDL_Gravity_Box.dir/src/inc/submodules/imgui/imgui_widgets.cpp.s
+.PHONY : src/inc/submodules/imgui/imgui_widgets.cpp.s
+
 src/input.o: src/input.cpp.o
 .PHONY : src/input.o
 
@@ -350,6 +470,21 @@ help:
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"
+	@echo "... src/inc/submodules/imgui/imgui.o"
+	@echo "... src/inc/submodules/imgui/imgui.i"
+	@echo "... src/inc/submodules/imgui/imgui.s"
+	@echo "... src/inc/submodules/imgui/imgui_demo.o"
+	@echo "... src/inc/submodules/imgui/imgui_demo.i"
+	@echo "... src/inc/submodules/imgui/imgui_demo.s"
+	@echo "... src/inc/submodules/imgui/imgui_draw.o"
+	@echo "... src/inc/submodules/imgui/imgui_draw.i"
+	@echo "... src/inc/submodules/imgui/imgui_draw.s"
+	@echo "... src/inc/submodules/imgui/imgui_tables.o"
+	@echo "... src/inc/submodules/imgui/imgui_tables.i"
+	@echo "... src/inc/submodules/imgui/imgui_tables.s"
+	@echo "... src/inc/submodules/imgui/imgui_widgets.o"
+	@echo "... src/inc/submodules/imgui/imgui_widgets.i"
+	@echo "... src/inc/submodules/imgui/imgui_widgets.s"
 	@echo "... src/input.o"
 	@echo "... src/input.i"
 	@echo "... src/input.s"

@@ -1,0 +1,6 @@
+[submodule "src/inc/submodules/glm"]
+	path = src/inc/submodules/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "src/inc/submodules/imgui"]
+	path = src/inc/submodules/imgui
+	url = https://github.com/ocornut/imgui.git

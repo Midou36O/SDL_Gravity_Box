@@ -9,10 +9,15 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+
 void main()
 {
     FragPos = vec3(model * vec4(aPos, 1.0));
-    Normal = aNormal;  
+    Normal = mat3(transpose(inverse(model))) * aNormal; // Inverse transforms are very expensive. Find a way to avoid them.
+                                                        // To avoid them, we should be calculating the normal matrix in the
+                                                        // CPU and passing it to the shader.
+
+    //Normal = aNormal;  
     
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }

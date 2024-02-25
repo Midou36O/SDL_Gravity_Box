@@ -54,7 +54,7 @@ Copy the `res/img` directory to the `build` folder. The executable files for thi
 
 or simply run this
 
-`g++ -c src/*.cpp src/*.c src/vertx/*.cpp src/imgui/imgui*.cpp src/imgui/backends/imgui_impl_sdl2.cpp src/imgui/backends/imgui_impl_opengl3.cpp -std=c++14 -m64 -g -Wall -I src/inc -I src/inc/imgui/ -I src/inc/imgui/backends/ -I /usr/include/SDL2 && g++ *.o -o bin/debug/main -lGL -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -limgui`
+`g++ -c src/*.cpp src/*.c src/vertx/*.cpp src/inc/submodules/imgui/imgui*.cpp src/inc/submodules/imgui/backends/imgui_impl_sdl2.cpp src/inc/submodules/imgui/backends/imgui_impl_opengl3.cpp -std=c++14 -m64 -g -Wall -I src/inc -I src/inc/submodules/imgui/ -I src/inc/submodules/imgui/backends/ -I /usr/include/SDL2 && g++ *.o -o bin/debug/main -lGL -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -limgui`
 
 (I should look into CMake this is getting unmanageable.)
 

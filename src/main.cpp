@@ -274,12 +274,13 @@ int main(int argc, char *args[]) {
   view_pos1 = {0.0f, 0.0f, 3.0f};
   view_pos light_pos;
   light_pos = {1.2f, 1.0f, 2.0f};
+  float scale = 1.0f;
+  struct gl_color objcol = {1.0f, 1.0f, 1.0f};
 
   bool fs;
   bool wireframe = false;
 
   // Scale of the entity. Y axis.
-  int YPos_wh = 1;
   struct mouse_pos {
     int x = SCREEN_WIDTH / 2;
     int y = SCREEN_HEIGHT / 2;
@@ -287,9 +288,9 @@ int main(int argc, char *args[]) {
   mouse_pos mousepos;
   int lastX = mousepos.x;
   int lastY = mousepos.y;
-  bool mmov = true;
+  bool mmov = false, pmov = false;
 
-  float speed = 0.1f;
+  float speed = 5.0f;
 
   while (gameRunning) {
 
@@ -338,6 +339,9 @@ int main(int argc, char *args[]) {
         case SDLK_d:
           camera.ProcessKeyboard(LEFT, deltaTime);
           break;
+        // shift key for increased speed.
+        case KMOD_LSHIFT:
+          speed = 50.0f;
 
         case SDLK_r:
           std::cout << "RESET!" << std::endl;
@@ -380,18 +384,60 @@ int main(int argc, char *args[]) {
 
       }
 
-      // Get the mouse position on the window.
+      else if (event.type == SDL_KEYUP) {
+        switch (event.key.keysym.sym) {
+        case KMOD_LSHIFT:
+          speed = 5.0f;
+          break;
+
+        default:
+          break;
+        }
+      }
+
+      // Mouse click left
+      else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        switch (event.button.button) {
+        case SDL_BUTTON_LEFT:
+          mmov = true;
+          break;
+
+        case SDL_BUTTON_RIGHT:
+          pmov = true;
+          break;
+
+        default:
+          break;
+        }
+      } else if (event.type == SDL_MOUSEBUTTONUP) {
+        switch (event.button.button) {
+        case SDL_BUTTON_LEFT:
+          mmov = false;
+          break;
+
+        case SDL_BUTTON_RIGHT:
+          pmov = false;
+          break;
+
+        default:
+          break;
+        }
+      }
+      // Scroll wheel
       else if (event.type == SDL_MOUSEWHEEL) {
         if (event.wheel.y > 0) {
-          YPos_wh++;
+          fov -= 1.0f;
+          if (fov < 1.0f) {
+            fov = 1.0f;
+          }
         } else if (event.wheel.y < 0) {
-          if (YPos_wh <= 1) {
-            YPos_wh = 1;
-          } else {
-            YPos_wh--;
+          fov += 1.0f;
+          if (fov > 140.0f) {
+            fov = 140.0f;
           }
         }
       }
+
       SDL_GetMouseState(&mousepos.x, &mousepos.y);
 
       // if (20 > (SDL_GetTicks() - lastTicks)) {
@@ -407,6 +453,13 @@ int main(int argc, char *args[]) {
     float yoffset = lastY - mousepos.y;
     lastX = mousepos.x;
     lastY = mousepos.y;
+
+    if (lastY > SCREEN_HEIGHT) {
+      lastY = SCREEN_HEIGHT;
+    }
+    if (lastX > SCREEN_WIDTH) {
+      lastX = SCREEN_WIDTH;
+    }
 
     // Update window width and height.
     window.getWindowSize(&SCREEN_WIDTH, &SCREEN_HEIGHT);
@@ -455,6 +508,7 @@ int main(int argc, char *args[]) {
     ImGui::Begin("Window resolution");
     ImGui::Text("Window resolution is %d, %d", SCREEN_WIDTH, SCREEN_HEIGHT);
     ImGui::Text("Mouse position is %d, %d", mousepos.x, mousepos.y);
+    ImGui::Text("Mouse left is %s", mmov ? "held down." : "released.");
     ImGui::Text("The offset is %.2f, %.2f", xoffset, yoffset);
     ImGui::End();
     // Triangle pos window
@@ -469,6 +523,7 @@ int main(int argc, char *args[]) {
     // ImGui::ColorEdit3("square color3", &vertices[8 * 2 + 3]);
     // ImGui::ColorEdit3("square color4", &vertices[8 * 3 + 3]);
     ImGui::SliderFloat3("Light Position", &light_pos.x, -5.0f, 5.0f);
+    ImGui::SliderFloat("Scale", &scale, 0.0f, 5.0f);
     // Wireframe mode
     ImGui::Checkbox("Wireframe mode", &wireframe);
     // Mouse enable
@@ -477,6 +532,7 @@ int main(int argc, char *args[]) {
     // OpenGL background color window
     ImGui::Begin("OpenGL background color");
     ImGui::ColorEdit3("Background color", &gl_color.r);
+    ImGui::ColorEdit3("Box color", &objcol.r);
     ImGui::End();
     // Print the sine wave window
     ImGui::Begin("Sine wave");
@@ -526,10 +582,9 @@ int main(int argc, char *args[]) {
     glm::vec3 lightPos(light_pos.x, light_pos.y, light_pos.z);
     lightningShader.use();
     lightningShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-    lightningShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    lightningShader.setVec3(
-        "lightPos",
-        lightPos); // To compensate not having a lightPos variable here.
+    lightningShader.setVec3("lightColor", objcol.r, objcol.g, objcol.b);
+    lightningShader.setVec3("lightPos", lightPos);
+    lightningShader.setVec3("viewPos", camera.Position);
     // glm translation, rotation, and scale loop
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
@@ -542,6 +597,14 @@ int main(int argc, char *args[]) {
     }
     // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     view = camera.GetViewMatrix();
+    // TODO: Get the camera to move on the X and Y axis while remembering the
+    // positions too. HELP: Is this even possible without too many code hacks?
+    // REFERENCE: Find how Maya camera movement works.
+    if (pmov) {
+      view =
+          glm::translate(view, glm::vec3((float)(cos(mousepos.x / 4)),
+                                         (float)(cos(mousepos.y / 4)), 0.0f));
+    }
 
     projection = glm::perspective(
         glm::radians(-fov), (float)((float)SCREEN_WIDTH / (float)SCREEN_HEIGHT),
@@ -555,8 +618,8 @@ int main(int argc, char *args[]) {
     lightningShader.setMat4("model", model);
 
     ImGui::Begin("FOV");
-    ImGui::SliderFloat("FOV", &fov, 0.0f, 140.0f);
-    ImGui::SliderFloat("speed", &speed, 0.0f, 140.0f);
+    ImGui::SliderFloat("FOV", &fov, 1.0f, 140.0f);
+    ImGui::SliderFloat("speed", &speed, 5.0f, 140.0f);
     ImGui::End();
     camera.SetSpeed(speed);
 
@@ -568,8 +631,9 @@ int main(int argc, char *args[]) {
     lightCubeShader.setMat4("view", view);
     model = glm::mat4(1.0f); // Reset the model matrix.
     model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f)); // Scale it down to 20%.
+    model = glm::scale(model, glm::vec3(scale)); // Scale it down to 20%.
     lightCubeShader.setMat4("model", model);
+    lightningShader.setVec3("lightColor2", objcol.r, objcol.g, objcol.b);
     lightcubeVAO.Bind();
     glDrawArrays(GL_TRIANGLES, 0, 36);
     debugGL.CheckOpenGLError("Drawing the arrays", __FILE__, __LINE__);

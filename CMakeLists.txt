@@ -72,8 +72,8 @@ add_library(glad "src/glad.c")
 include_directories("src/inc")
 
 # Dear ImGui
-include_directories("src/inc/imgui")
-include_directories("src/inc/imgui/backends")
+include_directories("src/inc/submodules/imgui")
+include_directories("src/inc/submodules/imgui/backends")
 
 file(
   GLOB
@@ -83,7 +83,7 @@ file(
   "src/inc/*.hpp"
   "src/inc/glad/glad.h"
   "src/inc/KHR/khrplatform.h"
-  "src/inc/imgui/*.cpp")
+  "src/inc/submodules/imgui/*.cpp")
 add_executable(SDL_Gravity_Box ${SOURCES})
 # FIXME: OpenGL will only work on linux according to the docs if
 # OPENGL_LIBRARIES and OEPNGL_GL_PREFERENCE is set! TODO: Find a way to make

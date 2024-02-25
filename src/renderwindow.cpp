@@ -10,9 +10,11 @@
 #include "renderwindow.hpp"
 
 // Imgui
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl2.h"
+#include "submodules/imgui/backends/imgui_impl_opengl3.h"
+#include "submodules/imgui/backends/imgui_impl_sdl2.h"
+#include "submodules/imgui/imgui.h"
+
+#define GL3_PROTOTYPES 1
 
 // Creates a new window to render content in it.
 // Takes the Title name, w(idth) and h(eight) of the window.
@@ -36,18 +38,12 @@ RenderWindow::RenderWindow(const char *p_title, int p_w, int p_h)
   //  check = false;
   //}
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_SetHint("SDL_HINT_MOUSE_RELATIVE_WARP_MOTION", "1");
 
   // Get the attribute to confirm.
 
   int check2;
-  SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &check2);
-  check2 == 1
-      ? std::cout << "SDL_GL_CONTEXT_PROFILE_MASK: Set properly, value: "
-                  << check2 << std::endl
-      : std::cerr << "SDL_GL_CONTEXT_PROFILE_MASK: Incorrect. \n"
-                  << check2 << std::endl;
+
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &check2);
   check2 == 3
@@ -62,6 +58,13 @@ RenderWindow::RenderWindow(const char *p_title, int p_w, int p_h)
                   << check2 << std::endl
       : std::cerr << "SDL_GL_CONTEXT_MINOR_VERSION: Incorrect. \n"
                   << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &check2);
+  check2 == 1
+      ? std::cout << "SDL_GL_CONTEXT_PROFILE_MASK: Set properly, value: "
+                  << check2 << std::endl
+      : std::cerr << "SDL_GL_CONTEXT_PROFILE_MASK: Incorrect. \n"
+                  << check2 << std::endl;
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
   SDL_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL, &check2);
   check2 == 1 ? std::cout << "SDL_GL_ACCELERATED_VISUAL: Set properly, value: "
@@ -73,6 +76,25 @@ RenderWindow::RenderWindow(const char *p_title, int p_w, int p_h)
   check2 == 1 ? std::cout << "SDL_GL_DOUBLEBUFFER: Set properly, value: "
                           << check2 << std::endl
               : std::cerr << "SDL_GL_DOUBLEBUFFER: Incorrect. \n"
+                          << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &check2);
+  check2 == 24 ? std::cout << "SDL_GL_DEPTH_SIZE: Set properly, value: "
+                           << check2 << std::endl
+               : std::cerr << "SDL_GL_DEPTH_SIZE: Incorrect. \n"
+                           << check2 << std::endl;
+  // Anti-aliasing
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &check2);
+  check2 == 1 ? std::cout << "SDL_GL_MULTISAMPLEBUFFERS: Set properly, value: "
+                          << check2 << std::endl
+              : std::cerr << "SDL_GL_MULTISAMPLEBUFFERS: Incorrect. \n"
+                          << check2 << std::endl;
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+  SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &check2);
+  check2 == 4 ? std::cout << "SDL_GL_MULTISAMPLESAMPLES: Set properly, value: "
+                          << check2 << std::endl
+              : std::cerr << "SDL_GL_MULTISAMPLESAMPLES: Incorrect. \n"
                           << check2 << std::endl;
 
   // Create a window using the given parameters.
